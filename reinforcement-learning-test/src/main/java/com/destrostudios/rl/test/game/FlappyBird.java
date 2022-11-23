@@ -89,7 +89,7 @@ public class FlappyBird extends Frame implements Environment {
         NDList action = agent.chooseAction(this, training);
         step(action, training);
         if (training) {
-            batchSteps = getBatch();
+            batchSteps = replayBuffer.getBatch();
         }
         if ((environmentStep % 5000) == 0) {
             closeStep();
@@ -139,11 +139,6 @@ public class FlappyBird extends Frame implements Environment {
     @Override
     public NDList getObservation() {
         return currentObservation;
-    }
-
-    @Override
-    public EnvironmentStep[] getBatch() {
-        return replayBuffer.getBatch();
     }
 
     /**

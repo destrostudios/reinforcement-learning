@@ -41,11 +41,6 @@ public interface Environment extends AutoCloseable {
      */
     EnvironmentStep[] runEnvironment(Agent agent, boolean training);
 
-    /**
-     * Returns a batch of steps from the environment {@link ai.djl.modality.rl.ReplayBuffer}.
-     */
-    EnvironmentStep[] getBatch();
-
     int getEnvironmentStep();
 
     @Override
