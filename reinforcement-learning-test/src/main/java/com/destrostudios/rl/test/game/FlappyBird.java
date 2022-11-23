@@ -49,9 +49,9 @@ public class FlappyBird extends Frame implements Environment {
         scoreCounter = new ScoreCounter(this);
     }
     @Setter
-    private boolean currentTerminal = false;
+    private float currentReward;
     @Setter
-    private float currentReward = 0.2f;
+    private boolean currentTerminal;
     @Setter
     private int gameState;
     private Ground ground;
@@ -69,7 +69,8 @@ public class FlappyBird extends Frame implements Environment {
 
     @Override
     public EnvironmentStep runEnvironment(Agent agent, boolean training) {
-        reset();
+        currentTerminal = false;
+        currentReward = 0.2f;
 
         NDList action = agent.chooseAction(this, training);
 
@@ -114,12 +115,6 @@ public class FlappyBird extends Frame implements Environment {
     @Override
     public void close() {
         manager.close();
-    }
-
-    @Override
-    public void reset() {
-        currentReward = 0.2f;
-        currentTerminal = false;
     }
 
     /**

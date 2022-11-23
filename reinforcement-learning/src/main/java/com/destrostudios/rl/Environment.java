@@ -10,11 +10,6 @@ import java.util.ArrayList;
 public interface Environment extends AutoCloseable {
 
     /**
-     * Resets the environment to it's default state.
-     */
-    void reset();
-
-    /**
      * Returns the observation detailing the current state of the environment.
      */
     NDList getObservation();
