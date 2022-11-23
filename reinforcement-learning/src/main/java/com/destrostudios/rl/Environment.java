@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /**
  * An environment to use for reinforcement learning.
  */
-public interface Environment extends AutoCloseable {
+public interface Environment {
 
     /**
      * Returns the observation detailing the current state of the environment.
@@ -26,8 +26,5 @@ public interface Environment extends AutoCloseable {
      * @param training true to run while training. When training, the steps will be recorded
      */
     EnvironmentStep runEnvironment(Agent agent, boolean training);
-
-    @Override
-    void close();
 
 }

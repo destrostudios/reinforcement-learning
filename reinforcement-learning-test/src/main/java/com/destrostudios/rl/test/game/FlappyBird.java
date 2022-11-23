@@ -28,8 +28,9 @@ public class FlappyBird extends Frame implements Environment {
     public static final int GAME_START = 1;
     public static final int GAME_OVER = 2;
 
-    public FlappyBird(NDManager manager, boolean withGraphics) {
-        this.manager = manager;
+    public FlappyBird(boolean withGraphics) {
+        // Does not need to be closed for now as we quit the complete application when finished
+        manager = NDManager.newBaseManager();
         this.withGraphics = withGraphics;
         if (this.withGraphics) {
             initFrame();
@@ -48,6 +49,8 @@ public class FlappyBird extends Frame implements Environment {
 
         scoreCounter = new ScoreCounter(this);
     }
+    private NDManager manager;
+    private boolean withGraphics;
     @Setter
     private float currentReward;
     @Setter
@@ -57,8 +60,6 @@ public class FlappyBird extends Frame implements Environment {
     private Ground ground;
     private Bird bird;
     private GameElementLayer gameElement;
-    private boolean withGraphics;
-    private NDManager manager;
     private BufferedImage currentImage;
     private NDList currentObservation;
     @Getter
@@ -110,11 +111,6 @@ public class FlappyBird extends Frame implements Environment {
     @Override
     public NDList getObservation() {
         return currentObservation;
-    }
-
-    @Override
-    public void close() {
-        manager.close();
     }
 
     /**
