@@ -12,7 +12,7 @@ import java.io.IOException;
 public class TestTester {
 
     public static void main(String[] args) throws IOException, MalformedModelException {
-        FlappyBird environment = new FlappyBird(NDManager.newBaseManager(), 1, 1, true);
+        FlappyBird environment = new FlappyBird(NDManager.newBaseManager(), true);
         Model model = TestModelLoader.loadModel();
         Tester tester = new Tester(environment, Trainer.createDefaultConfig());
         tester.test(model);

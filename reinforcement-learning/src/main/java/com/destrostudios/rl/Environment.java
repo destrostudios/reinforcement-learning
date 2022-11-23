@@ -29,11 +29,8 @@ public interface Environment extends AutoCloseable {
      *
      * @param agent    the agent to choose the actions with
      * @param training true to run while training. When training, the steps will be recorded
-     * @return the replayMemory
      */
-    EnvironmentStep[] runEnvironment(Agent agent, boolean training);
-
-    int getEnvironmentStep();
+    EnvironmentStep runEnvironment(Agent agent, boolean training);
 
     @Override
     void close();

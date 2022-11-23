@@ -12,10 +12,12 @@ import ai.djl.training.optimizer.Adam;
 import ai.djl.training.tracker.LinearTracker;
 import ai.djl.training.tracker.Tracker;
 import com.destrostudios.rl.EnvironmentStep;
+import com.destrostudios.rl.ReplayBuffer;
 import com.destrostudios.rl.agents.EpsilonGreedyAgent;
 import com.destrostudios.rl.agents.QAgent;
 import com.destrostudios.rl.Agent;
 import com.destrostudios.rl.Environment;
+import com.destrostudios.rl.buffers.LruReplayBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +42,14 @@ public class Trainer {
         this.environment = environment;
         this.config = config;
         this.batchSize = batchSize;
+        this.replayBuffer = new LruReplayBuffer(batchSize, REPLAY_BUFFER_SIZE);
     }
     private Environment environment;
     private TrainingConfig config;
     private int batchSize;
     private int trainStep;
-    private EnvironmentStep[] environmentSteps;
+    private int environmentStep;
+    private ReplayBuffer replayBuffer;
 
     public static DefaultTrainingConfig createDefaultConfig() {
         return new DefaultTrainingConfig(Loss.l2Loss())
@@ -91,8 +95,14 @@ public class Trainer {
 
     private void trainLoop(Agent agent, Model model) {
         while (trainStep < Trainer.EXPLORE) {
-            if (environment.getEnvironmentStep() > Trainer.OBSERVE) {
-                agent.trainBatch(environmentSteps);
+            // Needed to ensure the change in environmentStep is noticed
+            try {
+                Thread.sleep(0);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+            if (environmentStep > Trainer.OBSERVE) {
+                agent.trainBatch(replayBuffer.getBatch());
                 trainStep++;
                 logger.info("TRAIN_STEP " + trainStep);
                 if ((trainStep % Trainer.SAVE_EVERY_STEPS) == 0) {
@@ -108,7 +118,13 @@ public class Trainer {
 
     private void runLoop(Agent agent) {
         while (trainStep < Trainer.EXPLORE) {
-            environmentSteps = environment.runEnvironment(agent, true);
+            EnvironmentStep step = environment.runEnvironment(agent, true);
+            replayBuffer.addStep(step);
+            environmentStep++;
+            logger.info("ENVIRONMENT_STEP " + environmentStep);
+            if ((environmentStep % 5000) == 0) {
+                replayBuffer.closeStep();
+            }
         }
     }
 }

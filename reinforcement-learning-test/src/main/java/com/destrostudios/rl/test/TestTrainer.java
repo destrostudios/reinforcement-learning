@@ -11,10 +11,9 @@ import java.io.IOException;
 public class TestTrainer {
 
     public static void main(String[] args) throws IOException, MalformedModelException {
-        int batchSize = 32;
-        FlappyBird environment = new FlappyBird(NDManager.newBaseManager(), batchSize, Trainer.REPLAY_BUFFER_SIZE, true);
+        FlappyBird environment = new FlappyBird(NDManager.newBaseManager(), true);
         Model model = TestModelLoader.loadModel();
-        Trainer trainer = new Trainer(environment, Trainer.createDefaultConfig(), batchSize);
+        Trainer trainer = new Trainer(environment, Trainer.createDefaultConfig(), 32);
         trainer.train(model);
     }
 }
