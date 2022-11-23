@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.concurrent.*;
 
 public class Trainer {
@@ -43,6 +44,8 @@ public class Trainer {
     private Environment environment;
     private TrainingConfig config;
     private int batchSize;
+    private int trainStep;
+    private EnvironmentStep[] environmentSteps;
 
     public static DefaultTrainingConfig createDefaultConfig() {
         return new DefaultTrainingConfig(Loss.l2Loss())
@@ -66,9 +69,18 @@ public class Trainer {
                     .build()
             );
 
-            ExecutorService executorService = Executors.newSingleThreadExecutor();
+            ExecutorService executorService = Executors.newFixedThreadPool(2);
+            ArrayList<Runnable> runnables = new ArrayList<>();
+            runnables.add(() -> trainLoop(agent, model));
+            runnables.add(() -> runLoop(agent));
             try {
-                executorService.submit(() -> trainLoop(agent, model)).get();
+                ArrayList<Future<?>> futures = new ArrayList<>();
+                for (Runnable runnable : runnables) {
+                    futures.add(executorService.submit(runnable));
+                }
+                for (Future<?> future : futures) {
+                    future.get();
+                }
             } catch (InterruptedException | ExecutionException ex) {
                 throw new RuntimeException(ex);
             } finally {
@@ -78,9 +90,7 @@ public class Trainer {
     }
 
     private void trainLoop(Agent agent, Model model) {
-        int trainStep = 0;
         while (trainStep < Trainer.EXPLORE) {
-            EnvironmentStep[] environmentSteps = environment.runEnvironment(agent, true);
             if (environment.getEnvironmentStep() > Trainer.OBSERVE) {
                 agent.trainBatch(environmentSteps);
                 trainStep++;
@@ -93,6 +103,12 @@ public class Trainer {
                     }
                 }
             }
+        }
+    }
+
+    private void runLoop(Agent agent) {
+        while (trainStep < Trainer.EXPLORE) {
+            environmentSteps = environment.runEnvironment(agent, true);
         }
     }
 }

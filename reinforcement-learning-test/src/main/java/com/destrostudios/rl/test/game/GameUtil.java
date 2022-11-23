@@ -27,7 +27,7 @@ public class GameUtil {
         return (int) ((Math.random() * (max - min)) + min);
     }
 
-    public static NDArray preprocessImage(BufferedImage observation) {
-        return NDImageUtils.toTensor(NDImageUtils.resize(ImageFactory.getInstance().fromImage(observation).toNDArray(NDManager.newBaseManager(), Image.Flag.GRAYSCALE), 80, 80));
+    public static NDArray preprocessImage(BufferedImage image, int width, int height) {
+        return NDImageUtils.toTensor(NDImageUtils.resize(ImageFactory.getInstance().fromImage(image).toNDArray(NDManager.newBaseManager(), Image.Flag.GRAYSCALE), width, height));
     }
 }

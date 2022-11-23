@@ -23,18 +23,6 @@ public class FlappyBirdStep implements EnvironmentStep {
     private final boolean terminal;
 
     @Override
-    public NDList getPreObservation(NDManager manager) {
-        preObservation.attach(manager);
-        return preObservation;
-    }
-
-    @Override
-    public NDList getPostObservation(NDManager manager) {
-        postObservation.attach(manager);
-        return postObservation;
-    }
-
-    @Override
     public NDArray getReward() {
         return manager.create(reward);
     }

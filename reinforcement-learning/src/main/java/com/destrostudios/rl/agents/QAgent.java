@@ -55,11 +55,19 @@ public class QAgent implements Agent {
         NDManager temporaryManager = NDManager.newBaseManager();
 
         NDList preObservationBatch = new NDList();
-        Arrays.stream(batchSteps).forEach(step -> preObservationBatch.addAll(step.getPreObservation(temporaryManager)));
+        for (EnvironmentStep step : batchSteps) {
+            NDList preObservation = step.getPreObservation();
+            preObservation.attach(temporaryManager);
+            preObservationBatch.addAll(preObservation);
+        }
         NDList preInput = new NDList(NDArrays.concat(preObservationBatch, 0));
 
         NDList postObservationBatch = new NDList();
-        Arrays.stream(batchSteps).forEach(step -> postObservationBatch.addAll(step.getPostObservation(temporaryManager)));
+        for (EnvironmentStep step : batchSteps) {
+            NDList postObservation = step.getPostObservation();
+            postObservation.attach(temporaryManager);
+            postObservationBatch.addAll(postObservation);
+        }
         NDList postInput = new NDList(NDArrays.concat(postObservationBatch, 0));
 
         NDList actionBatch = new NDList();

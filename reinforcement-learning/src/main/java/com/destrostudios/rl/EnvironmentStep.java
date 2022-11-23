@@ -10,11 +10,6 @@ import ai.djl.ndarray.NDManager;
 public interface EnvironmentStep extends AutoCloseable {
 
     /**
-     * Returns the observation before the action which attach to manager.
-     */
-    NDList getPreObservation(NDManager manager);
-
-    /**
      * Returns the observation before the action.
      */
     NDList getPreObservation();
@@ -23,11 +18,6 @@ public interface EnvironmentStep extends AutoCloseable {
      * Returns the action taken.
      */
     NDList getAction();
-
-    /**
-     * Returns the observation after the action which attach to manager.
-     */
-    NDList getPostObservation(NDManager manager);
 
     /**
      * Return the observation after the action.
