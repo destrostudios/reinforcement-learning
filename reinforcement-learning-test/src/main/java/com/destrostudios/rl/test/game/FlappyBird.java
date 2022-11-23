@@ -99,12 +99,10 @@ public class FlappyBird extends Frame implements Environment {
     }
 
     /**
-     * {@inheritDoc}
      * action[0] == 1 : do nothing
      * action[1] == 1 : flap the bird
      */
-    @Override
-    public void step(NDList action, boolean training) {
+    private void step(NDList action, boolean training) {
         if (action.singletonOrThrow().getInt(1) == 1) {
             bird.birdFlap();
         }

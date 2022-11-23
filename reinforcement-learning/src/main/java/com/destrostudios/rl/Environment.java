@@ -25,14 +25,6 @@ public interface Environment extends AutoCloseable {
     ArrayList<NDList> getActionSpace();
 
     /**
-     * Takes a step by performing an action in this environment.
-     *
-     * @param action   the action to perform
-     * @param training true if the step is during training
-     */
-    void step(NDList action, boolean training);
-
-    /**
      * Runs the environment from reset until done.
      *
      * @param agent    the agent to choose the actions with
