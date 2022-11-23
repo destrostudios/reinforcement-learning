@@ -41,14 +41,14 @@ public class QAgent implements Agent {
     @Override
     public NDList chooseAction(Environment environment, boolean isTraining) {
         ArrayList<NDList> actionSpace = environment.getActionSpace();
-        NDArray actionReward = trainer.evaluate(environment.getObservation()).singletonOrThrow().get(0);
+        NDArray actionReward = trainer.evaluate(environment.getCurrentObservation()).singletonOrThrow().get(0);
         logger.info(Arrays.toString(actionReward.toFloatArray()));
         int bestAction = Math.toIntExact(actionReward.argMax().getLong());
         return actionSpace.get(bestAction);
     }
 
     @Override
-    public void trainBatch(EnvironmentStep[] batchSteps) {
+    public void train(EnvironmentStep[] batchSteps) {
         BatchData batchData = new BatchData(null, new ConcurrentHashMap<>(), new ConcurrentHashMap<>());
 
         // Temporary manager for attaching NDArray to reduce the gpu memory usage

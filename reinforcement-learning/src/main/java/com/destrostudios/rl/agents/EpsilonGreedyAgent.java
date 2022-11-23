@@ -46,7 +46,7 @@ public class EpsilonGreedyAgent implements Agent {
     }
 
     @Override
-    public void trainBatch(EnvironmentStep[] batchSteps) {
-        baseAgent.trainBatch(batchSteps);
+    public void train(EnvironmentStep[] batchSteps) {
+        baseAgent.train(batchSteps);
     }
 }

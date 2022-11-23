@@ -11,40 +11,18 @@ import java.util.ArrayList;
  */
 public class LruReplayBuffer implements ReplayBuffer {
 
-    /**
-     * @param batchSize  the number of steps to train on per batch
-     * @param bufferSize the number of steps to hold in the buffer
-     */
-    public LruReplayBuffer(int batchSize, int bufferSize) {
-        this.batchSize = batchSize;
+    public LruReplayBuffer(int trainBatchSize, int bufferSize) {
+        this.trainBatchSize = trainBatchSize;
         steps = new EnvironmentStep[bufferSize];
         stepToClose = new ArrayList<>(bufferSize);
         firstStepIndex = 0;
         stepsActualSize = 0;
     }
-    private int batchSize;
+    private int trainBatchSize;
     private EnvironmentStep[] steps;
     private ArrayList<EnvironmentStep> stepToClose;
     private int firstStepIndex;
     private int stepsActualSize;
-
-    @Override
-    public EnvironmentStep[] getBatch() {
-        EnvironmentStep[] batch = new EnvironmentStep[batchSize];
-        for (int i = 0; i < batchSize; i++) {
-            int baseIndex = RandomUtils.nextInt(stepsActualSize);
-            int index = Math.floorMod(firstStepIndex + baseIndex, steps.length);
-            batch[i] = steps[index];
-        }
-        return batch;
-    }
-
-    public void closeStep() {
-        for (EnvironmentStep step : stepToClose) {
-            step.close();
-        }
-        stepToClose.clear();
-    }
 
     @Override
     public void addStep(EnvironmentStep step) {
@@ -57,5 +35,24 @@ public class LruReplayBuffer implements ReplayBuffer {
             steps[stepsActualSize] = step;
             stepsActualSize++;
         }
+    }
+
+    @Override
+    public void cleanupInterval() {
+        for (EnvironmentStep step : stepToClose) {
+            step.close();
+        }
+        stepToClose.clear();
+    }
+
+    @Override
+    public EnvironmentStep[] getTrainingBatch() {
+        EnvironmentStep[] batch = new EnvironmentStep[trainBatchSize];
+        for (int i = 0; i < trainBatchSize; i++) {
+            int baseIndex = RandomUtils.nextInt(stepsActualSize);
+            int index = Math.floorMod(firstStepIndex + baseIndex, steps.length);
+            batch[i] = steps[index];
+        }
+        return batch;
     }
 }

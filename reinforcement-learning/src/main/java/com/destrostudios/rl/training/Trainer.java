@@ -1,6 +1,7 @@
 package com.destrostudios.rl.training;
 
 import ai.djl.Model;
+import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.training.DefaultTrainingConfig;
 import ai.djl.training.TrainingConfig;
@@ -95,14 +96,14 @@ public class Trainer {
 
     private void trainLoop(Agent agent, Model model) {
         while (trainStep < Trainer.EXPLORE) {
-            // Needed to ensure the change in environmentStep is noticed
+            // Needed to ensure the change in environmentStep is noticed (multithreading)
             try {
                 Thread.sleep(0);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
             if (environmentStep > Trainer.OBSERVE) {
-                agent.trainBatch(replayBuffer.getBatch());
+                agent.train(replayBuffer.getTrainingBatch());
                 trainStep++;
                 logger.info("TRAIN_STEP " + trainStep);
                 if ((trainStep % Trainer.SAVE_EVERY_STEPS) == 0) {
@@ -118,12 +119,13 @@ public class Trainer {
 
     private void runLoop(Agent agent) {
         while (trainStep < Trainer.EXPLORE) {
-            EnvironmentStep step = environment.runEnvironment(agent, true);
+            NDList action = agent.chooseAction(environment, true);
+            EnvironmentStep step = environment.takeAction(action);
             replayBuffer.addStep(step);
             environmentStep++;
             logger.info("ENVIRONMENT_STEP " + environmentStep);
             if ((environmentStep % 5000) == 0) {
-                replayBuffer.closeStep();
+                replayBuffer.cleanupInterval();
             }
         }
     }

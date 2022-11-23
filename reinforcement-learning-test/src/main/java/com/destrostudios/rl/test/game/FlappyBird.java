@@ -5,7 +5,6 @@ import com.destrostudios.rl.test.game.component.Ground;
 import com.destrostudios.rl.test.game.component.Bird;
 import com.destrostudios.rl.test.game.component.GameElementLayer;
 import com.destrostudios.rl.test.game.component.ScoreCounter;
-import com.destrostudios.rl.Agent;
 import com.destrostudios.rl.Environment;
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDArrays;
@@ -69,11 +68,9 @@ public class FlappyBird extends Frame implements Environment {
     private ScoreCounter scoreCounter;
 
     @Override
-    public EnvironmentStep runEnvironment(Agent agent, boolean training) {
+    public EnvironmentStep takeAction(NDList action) {
         currentTerminal = false;
         currentReward = 0.2f;
-
-        NDList action = agent.chooseAction(this, training);
 
         // action[0] == 1 : do nothing
         // action[1] == 1 : flap the bird
@@ -109,13 +106,13 @@ public class FlappyBird extends Frame implements Environment {
     }
 
     @Override
-    public NDList getObservation() {
+    public NDList getCurrentObservation() {
         return currentObservation;
     }
 
     /**
      * Convert image to CNN input.
-     * Copy the initial frame image, stack into NDList, then replace the fourth frame with the current frame to ensure that the batch picture is continuous.
+     * Copy the initial frame image, stack into NDList, then shift and replace the fourth frame each frame to ensure that the batch picture is continuous.
      *
      * @return the CNN input
      */

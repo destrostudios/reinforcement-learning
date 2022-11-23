@@ -4,27 +4,11 @@ import ai.djl.ndarray.NDList;
 
 import java.util.ArrayList;
 
-/**
- * An environment to use for reinforcement learning.
- */
 public interface Environment {
 
-    /**
-     * Returns the observation detailing the current state of the environment.
-     */
-    NDList getObservation();
-
-    /**
-     * Returns the current actions that can be taken in the environment.
-     */
     ArrayList<NDList> getActionSpace();
 
-    /**
-     * Runs the environment from reset until done.
-     *
-     * @param agent    the agent to choose the actions with
-     * @param training true to run while training. When training, the steps will be recorded
-     */
-    EnvironmentStep runEnvironment(Agent agent, boolean training);
+    EnvironmentStep takeAction(NDList action);
 
+    NDList getCurrentObservation();
 }
