@@ -79,18 +79,28 @@ public class FlappyBird extends Frame implements Environment {
             bird.birdFlap();
         }
 
+        bird.update();
+        ground.update(bird);
+        gameElement.update(bird);
+
         NDList preObservation = currentObservation;
         currentObservation = createObservation(currentImage);
 
         FlappyBirdStep step = new FlappyBirdStep(manager.newSubManager(), preObservation, currentObservation, action, currentReward, currentTerminal);
-        logger.info( "ACTION " + Arrays.toString(action.singletonOrThrow().toArray()) + " / REWARD " + step.getReward().getFloat() + " / SCORE " + getScore());
+        logger.info( "ACTION " + Arrays.toString(action.singletonOrThrow().toArray()) + " / REWARD " + step.getReward().getFloat() + " / SCORE " + scoreCounter.getScore());
 
         if (gameState == GAME_OVER) {
             restartGame();
         }
 
+        drawImage();
         if (withGraphics) {
-            drawEnvironment();
+            repaint();
+            try {
+                Thread.sleep(Constant.FPS);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
         }
 
         return step;
@@ -137,19 +147,13 @@ public class FlappyBird extends Frame implements Environment {
         }
     }
 
-    private void drawEnvironment() {
+    private void drawImage() {
         Graphics graphics = currentImage.getGraphics();
         graphics.setColor(Constant.BG_COLOR);
         graphics.fillRect(0, 0, Constant.FRAME_WIDTH, Constant.FRAME_HEIGHT);
-        ground.draw(graphics, bird);
+        ground.draw(graphics);
         bird.draw(graphics);
-        gameElement.draw(graphics, bird);
-        repaint();
-        try {
-            Thread.sleep(Constant.FPS);
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
+        gameElement.draw(graphics);
     }
 
     private void initFrame() {
@@ -159,6 +163,7 @@ public class FlappyBird extends Frame implements Environment {
         setResizable(false);
         setVisible(true);
         addWindowListener(new WindowAdapter() {
+
             @Override
             public void windowClosing(WindowEvent e) {
                 System.exit(0);
@@ -175,9 +180,5 @@ public class FlappyBird extends Frame implements Environment {
     @Override
     public void update(Graphics graphics) {
         graphics.drawImage(currentImage, 0, 0, null);
-    }
-
-    public long getScore() {
-        return scoreCounter.getScore();
     }
 }

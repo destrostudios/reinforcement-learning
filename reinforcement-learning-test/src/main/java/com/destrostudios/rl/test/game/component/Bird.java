@@ -51,18 +51,7 @@ public class Bird {
     private Rectangle birdCollisionRect;
     private int velocity = 0; // bird's velocity along Y, default same as playerFlapped
 
-    public void draw(Graphics g) {
-        movement();
-        drawBirdImg(g);
-        // g.setColor(Color.white);
-        // g.drawRect((int) birdCollisionRect.getX(), (int)birdCollisionRect.getY(), (int) birdCollisionRect.getWidth(), (int) birdCollisionRect.getHeight());
-    }
-
-    public void drawBirdImg(Graphics g) {
-        g.drawImage(birdImages, x - (BIRD_WIDTH >> 1), y - (BIRD_HEIGHT >> 1), null);
-    }
-
-    private void movement() {
+    public void update() {
         if (velocity > MAX_VEL_Y) {
             velocity -= ACC_Y;
         }
@@ -77,10 +66,9 @@ public class Bird {
     }
 
     public void birdFlap() {
-        if (isDead()) {
-            return;
+        if (!isDead()) {
+            velocity = ACC_FLAP;
         }
-        velocity = ACC_FLAP;
     }
 
     public void die() {
@@ -105,5 +93,11 @@ public class Bird {
 
     public int getBirdX() {
         return x;
+    }
+
+    public void draw(Graphics graphics) {
+        graphics.drawImage(birdImages, x - (BIRD_WIDTH >> 1), y - (BIRD_HEIGHT >> 1), null);
+        // graphics.setColor(Color.white);
+        // graphics.drawRect((int) birdCollisionRect.getX(), (int)birdCollisionRect.getY(), (int) birdCollisionRect.getWidth(), (int) birdCollisionRect.getHeight());
     }
 }

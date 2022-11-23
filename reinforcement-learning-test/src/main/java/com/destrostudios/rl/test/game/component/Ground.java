@@ -22,22 +22,20 @@ public class Ground {
 	private int velocity;
 	private int layerX;
 
-	public void draw(Graphics g, Bird bird) {
-		if (bird.isDead()) {
-			return;
+	public void update(Bird bird) {
+		if (!bird.isDead()) {
+			layerX += velocity;
+			if (layerX > backgroundImage.getWidth()) {
+				layerX = 0;
+			}
 		}
-		int imgWidth = backgroundImage.getWidth();
-		int count = Constant.FRAME_WIDTH / imgWidth + 2; // 根据窗口宽度得到图片的绘制次数
-		for (int i = 0; i < count; i++) {
-			g.drawImage(backgroundImage, imgWidth * i - layerX, Constant.FRAME_HEIGHT - GROUND_HEIGHT, null);
-		}
-		movement();
 	}
 
-	private void movement() {
-		layerX += velocity;
-		if (layerX > backgroundImage.getWidth()) {
-			layerX = 0;
+	public void draw(Graphics graphics) {
+		int imgWidth = backgroundImage.getWidth();
+		int count = Constant.FRAME_WIDTH / imgWidth + 2;
+		for (int i = 0; i < count; i++) {
+			graphics.drawImage(backgroundImage, imgWidth * i - layerX, Constant.FRAME_HEIGHT - GROUND_HEIGHT, null);
 		}
 	}
 }

@@ -20,26 +20,33 @@ public class GameElementLayer {
     }
     private final List<Pipe> pipes;
 
-    public void draw(Graphics g, Bird bird) {
+    public void update(Bird bird) {
         for (int i = 0; i < pipes.size(); i++) {
             Pipe pipe = pipes.get(i);
             if (pipe.isVisible()) {
-                pipe.draw(g, bird);
+                pipe.update(bird);
             } else {
                 Pipe remove = pipes.remove(i);
                 PipePool.giveBack(remove);
                 i--;
             }
         }
-        bird.drawBirdImg(g);
-        isCollideBird(bird);
-        generatePipe(bird);
+        if (!bird.isDead()) {
+            checkCollision(bird);
+            generatePipe(bird);
+        }
+    }
+
+    public void checkCollision(Bird bird) {
+        for (Pipe pipe : pipes) {
+            if (pipe.getPipeCollisionRect().intersects(bird.getBirdCollisionRect())) {
+                bird.die();
+                return;
+            }
+        }
     }
 
     private void generatePipe(Bird bird) {
-        if (bird.isDead()) {
-            return;
-        }
         if (pipes.size() == 0) {
             int topHeight = GameUtil.getRandomNumber(MIN_HEIGHT, MAX_HEIGHT + 1);
 
@@ -87,15 +94,9 @@ public class GameElementLayer {
         pipes.add(bottom);
     }
 
-    public void isCollideBird(Bird bird) {
-        if (bird.isDead()) {
-            return;
-        }
+    public void draw(Graphics graphics) {
         for (Pipe pipe : pipes) {
-            if (pipe.getPipeCollisionRect().intersects(bird.getBirdCollisionRect())) {
-                bird.die();
-                return;
-            }
+            pipe.draw(graphics);
         }
     }
 
