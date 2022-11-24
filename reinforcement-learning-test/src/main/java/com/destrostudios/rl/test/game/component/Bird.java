@@ -88,7 +88,6 @@ public class Bird {
         velocity = 0;
         int ImgHeight = birdImages.getHeight();
         birdCollisionRect.y = y + RECT_DESCALE * 4 - ImgHeight / 2;
-        game.getScoreCounter().reset();
     }
 
     public int getBirdX() {

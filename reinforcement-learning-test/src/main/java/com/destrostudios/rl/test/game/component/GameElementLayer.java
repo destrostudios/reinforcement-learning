@@ -72,7 +72,7 @@ public class GameElementLayer {
             if ((pipes.size() >= PipePool.FULL_PIPE)
                 && (currentDistance <= SCORE_DISTANCE)
                 && (currentDistance > (SCORE_DISTANCE - Constant.GAME_SPEED))) {
-                bird.getGame().getScoreCounter().score(bird);
+                bird.getGame().score();
             }
             if (lastPipe.isInFrame()) {
                 addNormalPipe(lastPipe);
