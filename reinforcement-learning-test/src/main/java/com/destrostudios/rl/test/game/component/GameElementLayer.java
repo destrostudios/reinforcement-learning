@@ -60,7 +60,7 @@ public class GameElementLayer {
             pipes.add(bottom);
         } else {
             Pipe lastPipe = pipes.get(pipes.size() - 1);
-            int currentDistance = lastPipe.getX() - bird.getBirdX() + Bird.BIRD_WIDTH / 2;
+            int currentDistance = lastPipe.getX() - bird.getX() + Bird.BIRD_WIDTH / 2;
             final int SCORE_DISTANCE = Pipe.PIPE_WIDTH * 2 + HORIZONTAL_INTERVAL;
             if (pipes.size() >= PipePool.FULL_PIPE
                 && currentDistance <= SCORE_DISTANCE + Pipe.PIPE_WIDTH * 3 / 2

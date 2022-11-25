@@ -44,12 +44,13 @@ public class Bird {
     }
     @Getter
     private FlappyBird game;
+    @Getter
     private int x;
     private int y;
     private int birdState;
     @Getter
     private Rectangle birdCollisionRect;
-    private int velocity = 0; // bird's velocity along Y, default same as playerFlapped
+    private int velocity = 0; // Bird's velocity along Y, default same as playerFlapped
 
     public void update() {
         if (velocity > MAX_VEL_Y) {
@@ -86,10 +87,6 @@ public class Bird {
         velocity = 0;
         int ImgHeight = birdImages.getHeight();
         birdCollisionRect.y = y + RECT_DESCALE * 4 - ImgHeight / 2;
-    }
-
-    public int getBirdX() {
-        return x;
     }
 
     public void draw(Graphics graphics) {
