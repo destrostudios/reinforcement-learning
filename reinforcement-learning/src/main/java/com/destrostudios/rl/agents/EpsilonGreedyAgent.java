@@ -22,12 +22,6 @@ public class EpsilonGreedyAgent implements Agent {
 
     private static final Logger logger = LoggerFactory.getLogger(EpsilonGreedyAgent.class);
 
-    /**
-     * Constructs an {@link ai.djl.modality.rl.agent.EpsilonGreedy}.
-     *
-     * @param baseAgent   the (presumably model-based) agent to use for exploitation and to train
-     * @param exploreRate the probability of taking a random action
-     */
     public EpsilonGreedyAgent(Agent baseAgent, Tracker exploreRate) {
         this.baseAgent = baseAgent;
         this.exploreRate = exploreRate;

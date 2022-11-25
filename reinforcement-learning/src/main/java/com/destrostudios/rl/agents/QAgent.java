@@ -35,8 +35,7 @@ public class QAgent implements Agent {
     private static final Logger logger = LoggerFactory.getLogger(QAgent.class);
 
     private Trainer trainer;
-    // The reward discount to apply to rewards from future states
-    private float rewardDiscount;
+    private float rewardDiscount; // The reward discount to apply to rewards from future states
 
     @Override
     public NDList chooseAction(Environment environment, boolean isTraining) {
