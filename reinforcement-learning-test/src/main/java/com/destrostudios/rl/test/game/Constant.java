@@ -13,6 +13,11 @@ public class Constant {
     public static final int FPS = 1000 / 30;
     public static final int GAME_SPEED = 6;
 
+    public static final int OBSERVATION_CONTINUOUS_LENGTH = 4;
+    public static final int OBSERVATION_WIDTH = 80;
+    public static final int OBSERVATION_HEIGHT = 80;
+    public static final long[] OBSERVATION_SHAPE = new long[] { OBSERVATION_CONTINUOUS_LENGTH, OBSERVATION_WIDTH, OBSERVATION_HEIGHT };
+
     public static final String RESOURCE_PATH = "./reinforcement-learning-test/src/main/resources";
     public static final String BG_IMG_PATH = RESOURCE_PATH + "/img/background.png";
     public static final String BIRDS_IMG_PATH = RESOURCE_PATH + "/img/0.png";

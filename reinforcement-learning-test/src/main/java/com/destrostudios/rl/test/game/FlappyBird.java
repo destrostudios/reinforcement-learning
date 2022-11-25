@@ -36,7 +36,7 @@ public class FlappyBird extends Frame implements Environment {
         gameElement = new GameElementLayer();
 
         currentImage = new BufferedImage(Constant.FRAME_WIDTH, Constant.FRAME_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
-        continuousImage = new NDContinuousArray(4);
+        continuousImage = new NDContinuousArray(Constant.OBSERVATION_CONTINUOUS_LENGTH);
         updateObservation();
 
         if (withGraphics) {
@@ -122,7 +122,7 @@ public class FlappyBird extends Frame implements Environment {
     }
 
     private void updateObservation() {
-        NDArray observation = GameUtil.preprocessImage(currentImage, 80, 80);
+        NDArray observation = GameUtil.preprocessImage(currentImage, Constant.OBSERVATION_WIDTH, Constant.OBSERVATION_HEIGHT);
         currentObservation = continuousImage.push(observation);
     }
 

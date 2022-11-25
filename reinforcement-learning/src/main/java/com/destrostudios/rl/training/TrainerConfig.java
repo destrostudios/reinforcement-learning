@@ -18,6 +18,8 @@ import lombok.*;
 public class TrainerConfig {
 
     @Builder.Default
+    private long[] shape = new long[0];
+    @Builder.Default
     private int replayBatchSize = 32;
     @Builder.Default
     private int replayBufferSize = 50000; // Number of previous outcomes to remember

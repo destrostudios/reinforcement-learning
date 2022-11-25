@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.concurrent.*;
 
 public class Trainer {
@@ -37,7 +38,12 @@ public class Trainer {
     public void train(Model model) {
         environment.initialize(baseManager);
         try (ai.djl.training.Trainer trainer = model.newTrainer(config.getTrainingConfig())) {
-            trainer.initialize(new Shape(config.getReplayBatchSize(), 4, 80, 80));
+            LinkedList<Long> shape = new LinkedList<>();
+            shape.add((long) config.getReplayBatchSize());
+            for (long shapeValue : config.getShape()) {
+                shape.add(shapeValue);
+            }
+            trainer.initialize(new Shape(shape));
             trainer.notifyListeners(listener -> listener.onTrainingBegin(trainer));
 
             EpsilonGreedyAgent agent = new EpsilonGreedyAgent(
