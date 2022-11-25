@@ -9,7 +9,7 @@ import ai.djl.ndarray.NDList;
 import ai.djl.training.GradientCollector;
 import ai.djl.training.Trainer;
 import ai.djl.training.listener.TrainingListener.BatchData;
-import com.destrostudios.rl.Outcome;
+import com.destrostudios.rl.Replay;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,34 +47,34 @@ public class QAgent implements Agent {
     }
 
     @Override
-    public void train(Outcome[] outcomes) {
+    public void train(Replay[] replays) {
         BatchData batchData = new BatchData(null, new ConcurrentHashMap<>(), new ConcurrentHashMap<>());
 
         // Temporary manager for attaching NDArray to reduce the gpu memory usage
         NDManager temporaryManager = NDManager.newBaseManager();
 
         NDList preObservationBatch = new NDList();
-        for (Outcome outcome : outcomes) {
-            NDList preObservation = outcome.getPreObservation();
+        for (Replay replay : replays) {
+            NDList preObservation = replay.getPreObservation();
             preObservation.attach(temporaryManager);
             preObservationBatch.addAll(preObservation);
         }
         NDList preInput = new NDList(NDArrays.concat(preObservationBatch, 0));
 
         NDList postObservationBatch = new NDList();
-        for (Outcome outcome : outcomes) {
-            NDList postObservation = outcome.getPostObservation();
+        for (Replay replay : replays) {
+            NDList postObservation = replay.getPostObservation();
             postObservation.attach(temporaryManager);
             postObservationBatch.addAll(postObservation);
         }
         NDList postInput = new NDList(NDArrays.concat(postObservationBatch, 0));
 
         NDList actionBatch = new NDList();
-        Arrays.stream(outcomes).forEach(outcome -> actionBatch.addAll(outcome.getAction()));
+        Arrays.stream(replays).forEach(replay -> actionBatch.addAll(replay.getAction()));
         NDList actionInput = new NDList(NDArrays.stack(actionBatch, 0));
 
         NDList rewardBatch = new NDList();
-        Arrays.stream(outcomes).forEach(outcome -> rewardBatch.addAll(new NDList(outcome.getReward())));
+        Arrays.stream(replays).forEach(replay -> rewardBatch.addAll(new NDList(replay.getReward())));
         NDList rewardInput = new NDList(NDArrays.stack(rewardBatch, 0));
 
         try (GradientCollector collector = trainer.newGradientCollector()) {
@@ -85,10 +85,10 @@ public class QAgent implements Agent {
                 .mul(actionInput.singletonOrThrow())
                 .sum(new int[]{1}));
 
-            NDArray[] targetQValue = new NDArray[outcomes.length];
-            for (int i = 0; i < outcomes.length; i++) {
-                if (outcomes[i].isTerminal()) {
-                    targetQValue[i] = outcomes[i].getReward();
+            NDArray[] targetQValue = new NDArray[replays.length];
+            for (int i = 0; i < replays.length; i++) {
+                if (replays[i].isTerminal()) {
+                    targetQValue[i] = replays[i].getReward();
                 } else {
                     targetQValue[i] = targetQReward.singletonOrThrow().get(i)
                         .max()
@@ -106,9 +106,9 @@ public class QAgent implements Agent {
             batchData.getPredictions().put(q.singletonOrThrow().getDevice(), q);
             trainer.step();
         }
-        for (Outcome outcome : outcomes) {
-            outcome.getPreObservation().attach(outcome.getManager());
-            outcome.getPostObservation().attach(outcome.getManager());
+        for (Replay replay : replays) {
+            replay.getPreObservation().attach(replay.getManager());
+            replay.getPostObservation().attach(replay.getManager());
         }
         temporaryManager.close();
     }

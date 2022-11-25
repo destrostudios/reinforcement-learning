@@ -18,9 +18,9 @@ import lombok.*;
 public class TrainerConfig {
 
     @Builder.Default
-    private int outcomeBatchSize = 32;
+    private int replayBatchSize = 32;
     @Builder.Default
-    private int outcomeBufferSize = 50000; // Number of previous outcomes to remember
+    private int replayBufferSize = 50000; // Number of previous outcomes to remember
     @Builder.Default
     private float rewardDiscount = 0.9f; // Decay rate of past observations
     @Builder.Default

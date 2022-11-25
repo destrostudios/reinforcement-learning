@@ -6,5 +6,5 @@ public interface Agent {
 
     NDList chooseAction(Environment environment, boolean isTraining);
 
-    void train(Outcome[] outcomes);
+    void train(Replay[] replays);
 }

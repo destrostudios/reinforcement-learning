@@ -5,7 +5,7 @@ import com.destrostudios.rl.Environment;
 import ai.djl.ndarray.NDList;
 import ai.djl.training.tracker.Tracker;
 import ai.djl.util.RandomUtils;
-import com.destrostudios.rl.Outcome;
+import com.destrostudios.rl.Replay;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +40,7 @@ public class EpsilonGreedyAgent implements Agent {
     }
 
     @Override
-    public void train(Outcome[] outcomes) {
-        baseAgent.train(outcomes);
+    public void train(Replay[] replays) {
+        baseAgent.train(replays);
     }
 }

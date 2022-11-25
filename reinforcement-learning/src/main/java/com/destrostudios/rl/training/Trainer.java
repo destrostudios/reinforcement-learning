@@ -4,13 +4,10 @@ import ai.djl.Model;
 import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.training.tracker.LinearTracker;
-import com.destrostudios.rl.Outcome;
-import com.destrostudios.rl.OutcomeBuffer;
+import com.destrostudios.rl.*;
 import com.destrostudios.rl.agents.EpsilonGreedyAgent;
 import com.destrostudios.rl.agents.QAgent;
-import com.destrostudios.rl.Agent;
-import com.destrostudios.rl.Environment;
-import com.destrostudios.rl.buffers.LruOutcomeBuffer;
+import com.destrostudios.rl.buffers.LruReplayBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,17 +23,17 @@ public class Trainer {
     public Trainer(Environment environment, TrainerConfig config) {
         this.environment = environment;
         this.config = config;
-        this.outcomeBuffer = new LruOutcomeBuffer(config.getOutcomeBatchSize(), config.getOutcomeBufferSize());
+        this.replayBuffer = new LruReplayBuffer(config.getReplayBatchSize(), config.getReplayBufferSize());
     }
     private Environment environment;
     private TrainerConfig config;
     private int trainStep;
     private int environmentStep;
-    private OutcomeBuffer outcomeBuffer;
+    private ReplayBuffer replayBuffer;
 
     public void train(Model model) {
         try (ai.djl.training.Trainer trainer = model.newTrainer(config.getTrainingConfig())) {
-            trainer.initialize(new Shape(config.getOutcomeBatchSize(), 4, 80, 80));
+            trainer.initialize(new Shape(config.getReplayBatchSize(), 4, 80, 80));
             trainer.notifyListeners(listener -> listener.onTrainingBegin(trainer));
 
             EpsilonGreedyAgent agent = new EpsilonGreedyAgent(
@@ -77,7 +74,7 @@ public class Trainer {
                 throw new RuntimeException(ex);
             }
             if (environmentStep > config.getEnvironmentStepsObserve()) {
-                agent.train(outcomeBuffer.getTrainingBatch());
+                agent.train(replayBuffer.getTrainingBatch());
                 trainStep++;
                 logger.info("TRAIN_STEP " + trainStep);
                 if ((trainStep % config.getTrainStepsSaveInterval()) == 0) {
@@ -94,12 +91,15 @@ public class Trainer {
     private void runLoop(Agent agent) {
         while (trainStep < config.getTrainStepsExplore()) {
             NDList action = agent.chooseAction(environment, true);
-            Outcome step = environment.takeAction(action);
-            outcomeBuffer.addOutcome(step);
+            NDList preObservation = environment.getCurrentObservation();
+            Outcome outcome = environment.takeAction(action);
+            NDList postObservation = environment.getCurrentObservation();
+            Replay replay = new Replay(outcome.getManager(), preObservation, action, postObservation, outcome.getManager().create(outcome.getReward()), outcome.isTerminal());
+            replayBuffer.addReplay(replay);
             environmentStep++;
             logger.info("ENVIRONMENT_STEP " + environmentStep);
             if ((environmentStep % 5000) == 0) {
-                outcomeBuffer.cleanupInterval();
+                replayBuffer.cleanupInterval();
             }
         }
     }
