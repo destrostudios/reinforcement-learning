@@ -83,8 +83,8 @@ public class QAgent implements Agent {
             NDList targetQReward = trainer.forward(postInput);
 
             NDList q = new NDList(qReward.singletonOrThrow()
-                    .mul(actionInput.singletonOrThrow())
-                    .sum(new int[]{1}));
+                .mul(actionInput.singletonOrThrow())
+                .sum(new int[]{1}));
 
             NDArray[] targetQValue = new NDArray[outcomes.length];
             for (int i = 0; i < outcomes.length; i++) {
@@ -92,9 +92,9 @@ public class QAgent implements Agent {
                     targetQValue[i] = outcomes[i].getReward();
                 } else {
                     targetQValue[i] = targetQReward.singletonOrThrow().get(i)
-                            .max()
-                            .mul(rewardDiscount)
-                            .add(rewardInput.singletonOrThrow().get(i));
+                        .max()
+                        .mul(rewardDiscount)
+                        .add(rewardInput.singletonOrThrow().get(i));
                 }
             }
             NDList targetQBatch = new NDList();

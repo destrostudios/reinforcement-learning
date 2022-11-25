@@ -29,14 +29,12 @@ public class Pipe {
 
     public Pipe() {
         this.velocity = Constant.GAME_SPEED;
-        this.width = PIPE_WIDTH;
         pipeCollisionRect = new Rectangle();
         pipeCollisionRect.width = PIPE_WIDTH;
     }
     @Getter
     private int x;
     private int y;
-    private int width;
     private int height;
     @Getter
     private boolean visible;
@@ -84,7 +82,7 @@ public class Pipe {
         for (int i = 0; i < count; i++) {
             graphics.drawImage(images[0], x, y + i * PIPE_HEIGHT, null);
         }
-        graphics.drawImage(images[1], x - ((PIPE_HEAD_WIDTH - width) >> 1), height - TOP_PIPE_LENGTHENING - PIPE_HEAD_HEIGHT, null);
+        graphics.drawImage(images[1], x - ((PIPE_HEAD_WIDTH - PIPE_WIDTH) >> 1), height - TOP_PIPE_LENGTHENING - PIPE_HEAD_HEIGHT, null);
     }
 
     private void drawBottomNormal(Graphics graphics) {
@@ -92,11 +90,11 @@ public class Pipe {
         for (int i = 0; i < count; i++) {
             graphics.drawImage(images[0], x, Constant.FRAME_HEIGHT - PIPE_HEIGHT - Ground.GROUND_HEIGHT - i * PIPE_HEIGHT, null);
         }
-        graphics.drawImage(images[2], x - ((PIPE_HEAD_WIDTH - width) >> 1), Constant.FRAME_HEIGHT - height, null);
+        graphics.drawImage(images[2], x - ((PIPE_HEAD_WIDTH - PIPE_WIDTH) >> 1), Constant.FRAME_HEIGHT - height, null);
     }
 
     public boolean isInFrame() {
-        return ((x + width) < Constant.FRAME_WIDTH);
+        return ((x + PIPE_WIDTH) < Constant.FRAME_WIDTH);
     }
 
     static class PipePool {

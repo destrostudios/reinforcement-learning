@@ -25,6 +25,8 @@ public class FlappyBird extends Frame implements Environment {
     private static final Logger logger = LoggerFactory.getLogger(FlappyBird.class);
     public static final int GAME_START = 1;
     public static final int GAME_OVER = 2;
+    private static final int[] DO_NOTHING = {1, 0};
+    private static final int[] FLAP = {0, 1};
 
     public FlappyBird(boolean withGraphics) {
         this.withGraphics = withGraphics;
@@ -41,8 +43,8 @@ public class FlappyBird extends Frame implements Environment {
         // Does not need to be closed for now as we quit the complete application when finished
         manager = NDManager.newBaseManager();
         actionSpace = new ArrayList<>();
-        actionSpace.add(new NDList(manager.create(Constant.DO_NOTHING)));
-        actionSpace.add(new NDList(manager.create(Constant.FLAP)));
+        actionSpace.add(new NDList(manager.create(DO_NOTHING)));
+        actionSpace.add(new NDList(manager.create(FLAP)));
 
         if (withGraphics) {
             initFrame();
@@ -140,7 +142,7 @@ public class FlappyBird extends Frame implements Environment {
 
     private void drawImage() {
         Graphics graphics = currentImage.getGraphics();
-        graphics.setColor(Constant.BG_COLOR);
+        graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, Constant.FRAME_WIDTH, Constant.FRAME_HEIGHT);
         ground.draw(graphics);
         bird.draw(graphics);
