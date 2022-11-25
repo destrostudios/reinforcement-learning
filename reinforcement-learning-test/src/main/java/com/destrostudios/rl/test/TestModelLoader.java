@@ -31,29 +31,33 @@ public class TestModelLoader {
                         .setKernelShape(new Shape(8, 8))
                         .optStride(new Shape(4, 4))
                         .optPadding(new Shape(3, 3))
-                        .setFilters(4).build())
+                        .setFilters(4)
+                        .build())
                 .add(Activation::relu)
 
                 .add(Conv2d.builder()
                         .setKernelShape(new Shape(4, 4))
                         .optStride(new Shape(2, 2))
-                        .setFilters(32).build())
+                        .setFilters(32)
+                        .build())
                 .add(Activation::relu)
 
                 .add(Conv2d.builder()
                         .setKernelShape(new Shape(3, 3))
                         .optStride(new Shape(1, 1))
-                        .setFilters(64).build())
+                        .setFilters(64)
+                        .build())
                 .add(Activation::relu)
 
                 .add(Blocks.batchFlattenBlock())
-                .add(Linear
-                        .builder()
-                        .setUnits(512).build())
+
+                .add(Linear.builder()
+                        .setUnits(512)
+                        .build())
                 .add(Activation::relu)
 
-                .add(Linear
-                        .builder()
-                        .setUnits(2).build());
+                .add(Linear.builder()
+                        .setUnits(2)
+                        .build());
     }
 }
