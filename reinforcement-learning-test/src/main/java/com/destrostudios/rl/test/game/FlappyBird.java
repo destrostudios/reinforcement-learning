@@ -104,7 +104,7 @@ public class FlappyBird extends Frame implements Environment {
         NDList preObservation = currentObservation;
         updateObservation();
 
-        Outcome outcome = new Outcome(manager.newSubManager(), preObservation, currentObservation, action, reward, currentTerminal);
+        Outcome outcome = new Outcome(manager.newSubManager(), preObservation, action, currentObservation, reward, currentTerminal);
         logger.info("ACTION " + Arrays.toString(action.singletonOrThrow().toArray()) + " / REWARD " + reward + " / SCORE " + score);
 
         if (gameState == GAME_OVER) {
