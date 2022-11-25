@@ -12,13 +12,13 @@ import ai.djl.training.loss.Loss;
 import ai.djl.training.optimizer.Adam;
 import ai.djl.training.tracker.LinearTracker;
 import ai.djl.training.tracker.Tracker;
-import com.destrostudios.rl.EnvironmentStep;
-import com.destrostudios.rl.ReplayBuffer;
+import com.destrostudios.rl.Outcome;
+import com.destrostudios.rl.OutcomeBuffer;
 import com.destrostudios.rl.agents.EpsilonGreedyAgent;
 import com.destrostudios.rl.agents.QAgent;
 import com.destrostudios.rl.Agent;
 import com.destrostudios.rl.Environment;
-import com.destrostudios.rl.buffers.LruReplayBuffer;
+import com.destrostudios.rl.buffers.LruOutcomeBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,26 +31,26 @@ public class Trainer {
 
     private static final Logger logger = LoggerFactory.getLogger(Trainer.class);
 
-    public static final int OBSERVE = 1000; // gameSteps to observe before training
-    public static final int EXPLORE = 3000000; // frames over which to anneal epsilon
+    public static final int OBSERVE = 1000; // game steps to observe before training
+    public static final int EXPLORE = 3000000; // train steps over which to anneal epsilon
     public static final int REPLAY_BUFFER_SIZE = 50000; // number of previous transitions to remember
     public static final float REWARD_DISCOUNT = 0.9f; // decay rate of past observations
     public static final float INITIAL_EPSILON = 0.01f;
     public static final float FINAL_EPSILON = 0.0001f;
-    public static final int SAVE_EVERY_STEPS = 100000; // save model every 100,000 step
+    public static final int SAVE_EVERY_TRAIN_STEPS = 100000; // save model every x train steps
 
     public Trainer(Environment environment, TrainingConfig config, int batchSize) {
         this.environment = environment;
         this.config = config;
         this.batchSize = batchSize;
-        this.replayBuffer = new LruReplayBuffer(batchSize, REPLAY_BUFFER_SIZE);
+        this.outcomeBuffer = new LruOutcomeBuffer(batchSize, REPLAY_BUFFER_SIZE);
     }
     private Environment environment;
     private TrainingConfig config;
     private int batchSize;
     private int trainStep;
     private int environmentStep;
-    private ReplayBuffer replayBuffer;
+    private OutcomeBuffer outcomeBuffer;
 
     public static DefaultTrainingConfig createDefaultConfig() {
         return new DefaultTrainingConfig(Loss.l2Loss())
@@ -103,10 +103,10 @@ public class Trainer {
                 throw new RuntimeException(ex);
             }
             if (environmentStep > Trainer.OBSERVE) {
-                agent.train(replayBuffer.getTrainingBatch());
+                agent.train(outcomeBuffer.getTrainingBatch());
                 trainStep++;
                 logger.info("TRAIN_STEP " + trainStep);
-                if ((trainStep % Trainer.SAVE_EVERY_STEPS) == 0) {
+                if ((trainStep % Trainer.SAVE_EVERY_TRAIN_STEPS) == 0) {
                     try {
                         model.save(Paths.get("."), "dqn-" + trainStep);
                     } catch (IOException ex) {
@@ -120,12 +120,12 @@ public class Trainer {
     private void runLoop(Agent agent) {
         while (trainStep < Trainer.EXPLORE) {
             NDList action = agent.chooseAction(environment, true);
-            EnvironmentStep step = environment.takeAction(action);
-            replayBuffer.addStep(step);
+            Outcome step = environment.takeAction(action);
+            outcomeBuffer.addOutcome(step);
             environmentStep++;
             logger.info("ENVIRONMENT_STEP " + environmentStep);
             if ((environmentStep % 5000) == 0) {
-                replayBuffer.cleanupInterval();
+                outcomeBuffer.cleanupInterval();
             }
         }
     }

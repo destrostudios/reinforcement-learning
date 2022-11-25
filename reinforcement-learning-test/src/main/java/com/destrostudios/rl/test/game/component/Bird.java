@@ -58,7 +58,7 @@ public class Bird {
         y = Math.min((y - velocity), BOTTOM_BOUNDARY);
         birdCollisionRect.y = birdCollisionRect.y - velocity;
         if ((birdCollisionRect.y < GameElementLayer.MIN_HEIGHT) || (birdCollisionRect.y > (GameElementLayer.MAX_HEIGHT + GameElementLayer.VERTICAL_INTERVAL))) {
-            game.setCurrentReward(0.1f);
+            game.setReward(0.1f);
         }
         if ((birdCollisionRect.y < Constant.WINDOW_BAR_HEIGHT) || (birdCollisionRect.y >= BOTTOM_BOUNDARY - 10)) {
             die();
@@ -70,7 +70,7 @@ public class Bird {
     }
 
     public void die() {
-        game.setCurrentReward(-1f);
+        game.setReward(-1);
         game.setCurrentTerminal(true);
         game.setGameState(FlappyBird.GAME_OVER);
         birdState = BIRD_DEAD;

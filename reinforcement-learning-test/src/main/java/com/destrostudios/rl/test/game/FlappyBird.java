@@ -5,7 +5,7 @@ import com.destrostudios.rl.test.game.component.Bird;
 import com.destrostudios.rl.test.game.component.GameElementLayer;
 import com.destrostudios.rl.util.NDContinuousArray;
 import com.destrostudios.rl.Environment;
-import com.destrostudios.rl.EnvironmentStep;
+import com.destrostudios.rl.Outcome;
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.NDManager;
@@ -63,7 +63,7 @@ public class FlappyBird extends Frame implements Environment {
     @Setter
     private boolean currentTerminal;
     @Setter
-    private float currentReward;
+    private float reward;
     @Getter
     private NDList currentObservation;
 
@@ -83,9 +83,9 @@ public class FlappyBird extends Frame implements Environment {
     }
 
     @Override
-    public EnvironmentStep takeAction(NDList action) {
+    public Outcome takeAction(NDList action) {
         currentTerminal = false;
-        currentReward = 0.2f;
+        reward = 0.2f;
 
         // action[0] == 1 : do nothing
         // action[1] == 1 : flap the bird
@@ -102,8 +102,8 @@ public class FlappyBird extends Frame implements Environment {
         NDList preObservation = currentObservation;
         updateObservation();
 
-        FlappyBirdStep step = new FlappyBirdStep(manager.newSubManager(), preObservation, currentObservation, action, currentReward, currentTerminal);
-        logger.info("ACTION " + Arrays.toString(action.singletonOrThrow().toArray()) + " / REWARD " + step.getReward().getFloat() + " / SCORE " + score);
+        Outcome outcome = new Outcome(manager.newSubManager(), preObservation, currentObservation, action, reward, currentTerminal);
+        logger.info("ACTION " + Arrays.toString(action.singletonOrThrow().toArray()) + " / REWARD " + reward + " / SCORE " + score);
 
         if (gameState == GAME_OVER) {
             restartGame();
@@ -118,7 +118,7 @@ public class FlappyBird extends Frame implements Environment {
             }
         }
 
-        return step;
+        return outcome;
     }
 
     private void updateObservation() {
@@ -127,8 +127,8 @@ public class FlappyBird extends Frame implements Environment {
     }
 
     public void score() {
-        currentReward = 1;
         score += 1;
+        reward = 1;
     }
 
     private void restartGame() {

@@ -5,7 +5,7 @@ import com.destrostudios.rl.Environment;
 import ai.djl.ndarray.NDList;
 import ai.djl.training.tracker.Tracker;
 import ai.djl.util.RandomUtils;
-import com.destrostudios.rl.EnvironmentStep;
+import com.destrostudios.rl.Outcome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,7 @@ public class EpsilonGreedyAgent implements Agent {
     }
 
     @Override
-    public void train(EnvironmentStep[] batchSteps) {
-        baseAgent.train(batchSteps);
+    public void train(Outcome[] outcomes) {
+        baseAgent.train(outcomes);
     }
 }

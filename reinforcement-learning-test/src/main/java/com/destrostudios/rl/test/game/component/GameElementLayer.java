@@ -67,7 +67,7 @@ public class GameElementLayer {
             if (pipes.size() >= PipePool.FULL_PIPE
                 && currentDistance <= SCORE_DISTANCE + Pipe.PIPE_WIDTH * 3 / 2
                 && currentDistance > SCORE_DISTANCE + Pipe.PIPE_WIDTH * 3 / 2 - Constant.GAME_SPEED) {
-                bird.getGame().setCurrentReward(0.8f);
+                bird.getGame().setReward(0.8f);
             }
             if (!bird.isDead()) {
                 if ((pipes.size() >= PipePool.FULL_PIPE)

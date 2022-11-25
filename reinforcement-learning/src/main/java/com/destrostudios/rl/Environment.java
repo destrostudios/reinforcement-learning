@@ -8,7 +8,7 @@ public interface Environment {
 
     ArrayList<NDList> getActionSpace();
 
-    EnvironmentStep takeAction(NDList action);
+    Outcome takeAction(NDList action);
 
     NDList getCurrentObservation();
 }

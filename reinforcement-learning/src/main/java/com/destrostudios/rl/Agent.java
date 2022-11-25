@@ -6,5 +6,5 @@ public interface Agent {
 
     NDList chooseAction(Environment environment, boolean isTraining);
 
-    void train(EnvironmentStep[] batchSteps);
+    void train(Outcome[] outcomes);
 }
