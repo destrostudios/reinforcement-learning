@@ -1,12 +1,12 @@
 package com.destrostudios.rl.test.game;
 
-import com.destrostudios.rl.EnvironmentStep;
 import com.destrostudios.rl.test.game.component.Ground;
 import com.destrostudios.rl.test.game.component.Bird;
 import com.destrostudios.rl.test.game.component.GameElementLayer;
+import com.destrostudios.rl.util.NDContinuousArray;
 import com.destrostudios.rl.Environment;
+import com.destrostudios.rl.EnvironmentStep;
 import ai.djl.ndarray.NDArray;
-import ai.djl.ndarray.NDArrays;
 import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.NDManager;
 import lombok.Getter;
@@ -27,41 +27,60 @@ public class FlappyBird extends Frame implements Environment {
     public static final int GAME_OVER = 2;
 
     public FlappyBird(boolean withGraphics) {
+        this.withGraphics = withGraphics;
+
+        gameState = GAME_START;
+        ground = new Ground();
+        bird = new Bird(this);
+        gameElement = new GameElementLayer();
+
+        currentImage = new BufferedImage(Constant.FRAME_WIDTH, Constant.FRAME_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
+        continuousImage = new NDContinuousArray(4);
+        updateObservation();
+
         // Does not need to be closed for now as we quit the complete application when finished
         manager = NDManager.newBaseManager();
-        this.withGraphics = withGraphics;
-        if (this.withGraphics) {
-            initFrame();
-            this.setVisible(true);
-        }
         actionSpace = new ArrayList<>();
         actionSpace.add(new NDList(manager.create(Constant.DO_NOTHING)));
         actionSpace.add(new NDList(manager.create(Constant.FLAP)));
 
-        currentImage = new BufferedImage(Constant.FRAME_WIDTH, Constant.FRAME_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
-        currentObservation = createObservation(currentImage);
-        ground = new Ground();
-        gameElement = new GameElementLayer();
-        bird = new Bird(this);
-        gameState = GAME_START;
+        if (withGraphics) {
+            initFrame();
+        }
     }
-    private NDManager manager;
     private boolean withGraphics;
     @Setter
-    private float currentReward;
-    @Setter
-    private boolean currentTerminal;
-    @Setter
     private int gameState;
+    private int score;
     private Ground ground;
     private Bird bird;
     private GameElementLayer gameElement;
-    private BufferedImage currentImage;
-    private NDList currentObservation;
+    private NDManager manager;
     @Getter
     private ArrayList<NDList> actionSpace;
-    private Queue<NDArray> imgQueue = new ArrayDeque<>(4);
-    private int score;
+    private BufferedImage currentImage;
+    private NDContinuousArray continuousImage;
+    @Setter
+    private boolean currentTerminal;
+    @Setter
+    private float currentReward;
+    @Getter
+    private NDList currentObservation;
+
+    private void initFrame() {
+        setTitle(Constant.GAME_TITLE);
+        setLocation(Constant.FRAME_X, Constant.FRAME_Y);
+        setSize(Constant.FRAME_WIDTH, Constant.FRAME_HEIGHT);
+        setResizable(false);
+        setVisible(true);
+        addWindowListener(new WindowAdapter() {
+
+            @Override
+            public void windowClosing(WindowEvent evt) {
+                System.exit(0);
+            }
+        });
+    }
 
     @Override
     public EnvironmentStep takeAction(NDList action) {
@@ -78,8 +97,10 @@ public class FlappyBird extends Frame implements Environment {
         ground.update(bird);
         gameElement.update(bird);
 
+        drawImage();
+
         NDList preObservation = currentObservation;
-        currentObservation = createObservation(currentImage);
+        updateObservation();
 
         FlappyBirdStep step = new FlappyBirdStep(manager.newSubManager(), preObservation, currentObservation, action, currentReward, currentTerminal);
         logger.info( "ACTION " + Arrays.toString(action.singletonOrThrow().toArray()) + " / REWARD " + step.getReward().getFloat() + " / SCORE " + score);
@@ -88,7 +109,6 @@ public class FlappyBird extends Frame implements Environment {
             restartGame();
         }
 
-        drawImage();
         if (withGraphics) {
             repaint();
             try {
@@ -101,41 +121,21 @@ public class FlappyBird extends Frame implements Environment {
         return step;
     }
 
+    private void updateObservation() {
+        NDArray observation = GameUtil.preprocessImage(currentImage, 80, 80);
+        currentObservation = continuousImage.push(observation);
+    }
+
     public void score() {
-        if (!bird.isDead()) {
-            currentReward = 1;
-            score += 1;
-        }
+        currentReward = 1;
+        score += 1;
     }
 
-    @Override
-    public NDList getCurrentObservation() {
-        return currentObservation;
-    }
-
-    /**
-     * Convert image to CNN input.
-     * Copy the initial frame image, stack into NDList, then shift and replace the fourth frame each frame to ensure that the batch picture is continuous.
-     *
-     * @return the CNN input
-     */
-    public NDList createObservation(BufferedImage image) {
-        NDArray observation = GameUtil.preprocessImage(image, 80, 80);
-        if (imgQueue.isEmpty()) {
-            for (int i = 0; i < 4; i++) {
-                imgQueue.offer(observation);
-            }
-            return new NDList(NDArrays.stack(new NDList(observation, observation, observation, observation), 1));
-        } else {
-            imgQueue.remove();
-            imgQueue.offer(observation);
-            NDArray[] buf = new NDArray[4];
-            int i = 0;
-            for (NDArray nd : imgQueue) {
-                buf[i++] = nd;
-            }
-            return new NDList(NDArrays.stack(new NDList(buf[0], buf[1], buf[2], buf[3]), 1));
-        }
+    private void restartGame() {
+        gameState = GAME_START;
+        score = 0;
+        gameElement.reset();
+        bird.reset();
     }
 
     private void drawImage() {
@@ -145,28 +145,6 @@ public class FlappyBird extends Frame implements Environment {
         ground.draw(graphics);
         bird.draw(graphics);
         gameElement.draw(graphics);
-    }
-
-    private void initFrame() {
-        setSize(Constant.FRAME_WIDTH, Constant.FRAME_HEIGHT);
-        setTitle(Constant.GAME_TITLE);
-        setLocation(Constant.FRAME_X, Constant.FRAME_Y);
-        setResizable(false);
-        setVisible(true);
-        addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.exit(0);
-            }
-        });
-    }
-
-    private void restartGame() {
-        gameState = GAME_START;
-        score = 0;
-        gameElement.reset();
-        bird.reset();
     }
 
     @Override

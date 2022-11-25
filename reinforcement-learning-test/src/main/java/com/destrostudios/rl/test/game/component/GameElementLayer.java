@@ -65,14 +65,16 @@ public class GameElementLayer {
             int currentDistance = lastPipe.getX() - bird.getBirdX() + Bird.BIRD_WIDTH / 2;
             final int SCORE_DISTANCE = Pipe.PIPE_WIDTH * 2 + HORIZONTAL_INTERVAL;
             if (pipes.size() >= PipePool.FULL_PIPE
-                    && currentDistance <= SCORE_DISTANCE + Pipe.PIPE_WIDTH * 3 / 2
-                    && currentDistance > SCORE_DISTANCE + Pipe.PIPE_WIDTH * 3 / 2 - Constant.GAME_SPEED) {
+                && currentDistance <= SCORE_DISTANCE + Pipe.PIPE_WIDTH * 3 / 2
+                && currentDistance > SCORE_DISTANCE + Pipe.PIPE_WIDTH * 3 / 2 - Constant.GAME_SPEED) {
                 bird.getGame().setCurrentReward(0.8f);
             }
-            if ((pipes.size() >= PipePool.FULL_PIPE)
-                && (currentDistance <= SCORE_DISTANCE)
-                && (currentDistance > (SCORE_DISTANCE - Constant.GAME_SPEED))) {
-                bird.getGame().score();
+            if (!bird.isDead()) {
+                if ((pipes.size() >= PipePool.FULL_PIPE)
+                    && (currentDistance <= SCORE_DISTANCE)
+                    && (currentDistance > (SCORE_DISTANCE - Constant.GAME_SPEED))) {
+                    bird.getGame().score();
+                }
             }
             if (lastPipe.isInFrame()) {
                 addNormalPipe(lastPipe);
