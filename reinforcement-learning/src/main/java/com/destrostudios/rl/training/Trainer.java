@@ -2,6 +2,7 @@ package com.destrostudios.rl.training;
 
 import ai.djl.Model;
 import ai.djl.ndarray.NDList;
+import ai.djl.ndarray.NDManager;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.training.tracker.LinearTracker;
 import com.destrostudios.rl.*;
@@ -24,14 +25,17 @@ public class Trainer {
         this.environment = environment;
         this.config = config;
         this.replayBuffer = new LruReplayBuffer(config.getReplayBatchSize(), config.getReplayBufferSize());
+        baseManager = NDManager.newBaseManager();
     }
     private Environment environment;
     private TrainerConfig config;
-    private int trainStep;
+    private NDManager baseManager;
     private int environmentStep;
+    private int trainStep;
     private ReplayBuffer replayBuffer;
 
     public void train(Model model) {
+        environment.initialize(baseManager);
         try (ai.djl.training.Trainer trainer = model.newTrainer(config.getTrainingConfig())) {
             trainer.initialize(new Shape(config.getReplayBatchSize(), 4, 80, 80));
             trainer.notifyListeners(listener -> listener.onTrainingBegin(trainer));
@@ -92,9 +96,10 @@ public class Trainer {
         while (trainStep < config.getTrainStepsExplore()) {
             NDList action = agent.chooseAction(environment, true);
             NDList preObservation = environment.getCurrentObservation();
-            Outcome outcome = environment.takeAction(action);
+            float reward = environment.takeAction(action);
             NDList postObservation = environment.getCurrentObservation();
-            Replay replay = new Replay(outcome.getManager(), preObservation, action, postObservation, outcome.getManager().create(outcome.getReward()), outcome.isTerminal());
+            NDManager subManager = baseManager.newSubManager();
+            Replay replay = new Replay(subManager, preObservation, action, postObservation, subManager.create(reward), environment.isTerminated());
             replayBuffer.addReplay(replay);
             environmentStep++;
             logger.info("ENVIRONMENT_STEP " + environmentStep);

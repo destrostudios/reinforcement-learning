@@ -5,7 +5,6 @@ import com.destrostudios.rl.test.game.component.Bird;
 import com.destrostudios.rl.test.game.component.GameElementLayer;
 import com.destrostudios.rl.util.NDContinuousArray;
 import com.destrostudios.rl.Environment;
-import com.destrostudios.rl.Outcome;
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.NDManager;
@@ -40,12 +39,6 @@ public class FlappyBird extends Frame implements Environment {
         continuousImage = new NDContinuousArray(4);
         updateObservation();
 
-        // Does not need to be closed for now as we quit the complete application when finished
-        manager = NDManager.newBaseManager();
-        actionSpace = new ArrayList<>();
-        actionSpace.add(new NDList(manager.create(DO_NOTHING)));
-        actionSpace.add(new NDList(manager.create(FLAP)));
-
         if (withGraphics) {
             initFrame();
         }
@@ -57,15 +50,15 @@ public class FlappyBird extends Frame implements Environment {
     private Ground ground;
     private Bird bird;
     private GameElementLayer gameElement;
-    private NDManager manager;
     @Getter
     private ArrayList<NDList> actionSpace;
     private BufferedImage currentImage;
     private NDContinuousArray continuousImage;
     @Setter
-    private boolean currentTerminal;
-    @Setter
     private float reward;
+    @Setter
+    @Getter
+    private boolean terminated;
     @Getter
     private NDList currentObservation;
 
@@ -85,8 +78,15 @@ public class FlappyBird extends Frame implements Environment {
     }
 
     @Override
-    public Outcome takeAction(NDList action) {
-        currentTerminal = false;
+    public void initialize(NDManager manager) {
+        actionSpace = new ArrayList<>();
+        actionSpace.add(new NDList(manager.create(DO_NOTHING)));
+        actionSpace.add(new NDList(manager.create(FLAP)));
+    }
+
+    @Override
+    public float takeAction(NDList action) {
+        terminated = false;
         reward = 0.2f;
 
         // action[0] == 1 : do nothing
@@ -118,7 +118,7 @@ public class FlappyBird extends Frame implements Environment {
             }
         }
 
-        return new Outcome(manager.newSubManager(), reward, currentTerminal);
+        return reward;
     }
 
     private void updateObservation() {

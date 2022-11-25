@@ -19,6 +19,6 @@ public class Replay implements AutoCloseable {
 
     @Override
     public void close() {
-        this.manager.close();
+        manager.close();
     }
 }

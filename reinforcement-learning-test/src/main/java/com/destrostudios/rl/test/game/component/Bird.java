@@ -72,7 +72,7 @@ public class Bird {
 
     public void die() {
         game.setReward(-1);
-        game.setCurrentTerminal(true);
+        game.setTerminated(true);
         game.setGameState(FlappyBird.GAME_OVER);
         birdState = BIRD_DEAD;
     }
