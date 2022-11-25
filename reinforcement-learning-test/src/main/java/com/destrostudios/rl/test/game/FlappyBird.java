@@ -89,7 +89,7 @@ public class FlappyBird extends Frame implements Environment {
 
         // action[0] == 1 : do nothing
         // action[1] == 1 : flap the bird
-        if (action.singletonOrThrow().getInt(1) == 1) {
+        if ((!bird.isDead()) && (action.singletonOrThrow().getInt(1) == 1)) {
             bird.birdFlap();
         }
 
@@ -103,7 +103,7 @@ public class FlappyBird extends Frame implements Environment {
         updateObservation();
 
         FlappyBirdStep step = new FlappyBirdStep(manager.newSubManager(), preObservation, currentObservation, action, currentReward, currentTerminal);
-        logger.info( "ACTION " + Arrays.toString(action.singletonOrThrow().toArray()) + " / REWARD " + step.getReward().getFloat() + " / SCORE " + score);
+        logger.info("ACTION " + Arrays.toString(action.singletonOrThrow().toArray()) + " / REWARD " + step.getReward().getFloat() + " / SCORE " + score);
 
         if (gameState == GAME_OVER) {
             restartGame();

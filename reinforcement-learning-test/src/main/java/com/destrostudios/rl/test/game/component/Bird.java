@@ -66,9 +66,7 @@ public class Bird {
     }
 
     public void birdFlap() {
-        if (!isDead()) {
-            velocity = ACC_FLAP;
-        }
+        velocity = ACC_FLAP;
     }
 
     public void die() {
