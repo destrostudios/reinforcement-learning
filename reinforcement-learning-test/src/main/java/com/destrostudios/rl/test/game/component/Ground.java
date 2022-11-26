@@ -22,12 +22,10 @@ public class Ground {
 	private int velocity;
 	private int layerX;
 
-	public void update(Bird bird) {
-		if (!bird.isDead()) {
-			layerX += velocity;
-			if (layerX > backgroundImage.getWidth()) {
-				layerX = 0;
-			}
+	public void update() {
+		layerX += velocity;
+		if (layerX > backgroundImage.getWidth()) {
+			layerX = 0;
 		}
 	}
 

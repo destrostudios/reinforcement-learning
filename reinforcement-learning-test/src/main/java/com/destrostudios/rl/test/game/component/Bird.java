@@ -10,9 +10,6 @@ import lombok.Getter;
 
 public class Bird {
 
-    private static final int BIRD_READY = 0;
-    private static final int BIRD_FALL = 1;
-    private static final int BIRD_DEAD = 2;
     private static final int RECT_DESCALE = 2;
     private static final int ACC_FLAP = 15; // players speed on flapping
     private static final double ACC_Y = 4; // players downward acceleration
@@ -21,7 +18,7 @@ public class Bird {
     public static final int BIRD_WIDTH;
     public static final int BIRD_HEIGHT;
     static {
-        birdImages = GameUtil.loadBufferedImage(Constant.BIRDS_IMG_PATH);
+        birdImages = GameUtil.loadBufferedImage(Constant.BIRDS_IMAGE_PATH);
         BIRD_WIDTH = birdImages.getWidth();
         BIRD_HEIGHT = birdImages.getHeight();
     }
@@ -42,12 +39,10 @@ public class Bird {
             BIRD_HEIGHT - RECT_DESCALE * 4
         );
     }
-    @Getter
     private FlappyBird game;
     @Getter
     private int x;
     private int y;
-    private int birdState;
     @Getter
     private Rectangle birdCollisionRect;
     private int velocity = 0; // Bird's velocity along Y, default same as playerFlapped
@@ -58,35 +53,24 @@ public class Bird {
         }
         y = Math.min((y - velocity), BOTTOM_BOUNDARY);
         birdCollisionRect.y = birdCollisionRect.y - velocity;
-        if ((birdCollisionRect.y < GameElementLayer.MIN_HEIGHT) || (birdCollisionRect.y > (GameElementLayer.MAX_HEIGHT + GameElementLayer.VERTICAL_INTERVAL))) {
-            game.setReward(0.1f);
-        }
-        if ((birdCollisionRect.y < Constant.WINDOW_BAR_HEIGHT) || (birdCollisionRect.y >= BOTTOM_BOUNDARY - 10)) {
-            die();
-        }
     }
 
-    public void birdFlap() {
+    public boolean isBelowOrAbovePipeHoles() {
+        return ((birdCollisionRect.y < Pipes.MIN_Y) || (birdCollisionRect.y > (Pipes.MAX_Y + Pipes.VERTICAL_INTERVAL)));
+    }
+
+    public boolean isOutOfBounds() {
+        return (birdCollisionRect.y < Constant.WINDOW_BAR_HEIGHT) || (birdCollisionRect.y >= (BOTTOM_BOUNDARY - 10));
+    }
+
+    public void flap() {
         velocity = ACC_FLAP;
     }
 
-    public void die() {
-        game.setReward(-1);
-        game.setTerminated(true);
-        game.setGameState(FlappyBird.GAME_OVER);
-        birdState = BIRD_DEAD;
-    }
-
-    public boolean isDead() {
-        return birdState == BIRD_FALL || birdState == BIRD_DEAD;
-    }
-
     public void reset() {
-        birdState = BIRD_READY;
         y = Constant.FRAME_HEIGHT >> 1;
         velocity = 0;
-        int ImgHeight = birdImages.getHeight();
-        birdCollisionRect.y = y + RECT_DESCALE * 4 - ImgHeight / 2;
+        birdCollisionRect.y = y + (RECT_DESCALE * 4) - (birdImages.getHeight() / 2);
     }
 
     public void draw(Graphics graphics) {

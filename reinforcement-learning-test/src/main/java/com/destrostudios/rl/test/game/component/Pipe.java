@@ -19,7 +19,7 @@ public class Pipe {
         int PIPE_IMAGE_COUNT = 3;
         images = new BufferedImage[PIPE_IMAGE_COUNT];
         for (int i = 0; i < PIPE_IMAGE_COUNT; i++) {
-            images[i] = GameUtil.loadBufferedImage(Constant.PIPE_IMG_PATH[i]);
+            images[i] = GameUtil.loadBufferedImage(Constant.PIPE_IMAGE_PATHS[i]);
         }
     }
     public static final int PIPE_WIDTH = images[0].getWidth();
@@ -55,12 +55,10 @@ public class Pipe {
     }
 
     public void update(Bird bird) {
-        if (!bird.isDead()) {
-            x -= velocity;
-            pipeCollisionRect.x -= velocity;
-            if (x < (-1 * PIPE_HEAD_WIDTH)) {
-                visible = false;
-            }
+        x -= velocity;
+        pipeCollisionRect.x -= velocity;
+        if (x < (-1 * PIPE_HEAD_WIDTH)) {
+            visible = false;
         }
     }
 
@@ -98,7 +96,7 @@ public class Pipe {
     }
 
     static class PipePool {
-        public static final int FULL_PIPE = (Constant.FRAME_WIDTH / (Pipe.PIPE_HEAD_WIDTH + GameElementLayer.HORIZONTAL_INTERVAL) + 2) * 2;
+        public static final int FULL_PIPE = (Constant.FRAME_WIDTH / (Pipe.PIPE_HEAD_WIDTH + Pipes.HORIZONTAL_INTERVAL) + 2) * 2;
         public static final int MAX_PIPE_COUNT = 30;
 
         private static final List<Pipe> pool = new ArrayList<>();

@@ -20,8 +20,8 @@ public class Constant {
 
     public static final String RESOURCE_PATH = "./reinforcement-learning-test/src/main/resources";
     public static final String BG_IMG_PATH = RESOURCE_PATH + "/img/background.png";
-    public static final String BIRDS_IMG_PATH = RESOURCE_PATH + "/img/0.png";
-    public static final String[] PIPE_IMG_PATH = {
+    public static final String BIRDS_IMAGE_PATH = RESOURCE_PATH + "/img/0.png";
+    public static final String[] PIPE_IMAGE_PATHS = {
         RESOURCE_PATH + "/img/pipe.png",
         RESOURCE_PATH + "/img/pipe_top.png",
         RESOURCE_PATH + "/img/pipe_bottom.png"
