@@ -27,8 +27,8 @@ public class FlappyBird extends Frame implements Environment {
     private static final int[] DO_NOTHING = {1, 0};
     private static final int[] FLAP = {0, 1};
 
-    public FlappyBird(boolean withGraphics) {
-        this.withGraphics = withGraphics;
+    public FlappyBird() {
+        initFrame();
 
         gameState = GAME_START;
         ground = new Ground();
@@ -38,12 +38,7 @@ public class FlappyBird extends Frame implements Environment {
         image = new BufferedImage(Constant.FRAME_WIDTH, Constant.FRAME_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
         continuousObservation = new NDContinuousArray(Constant.OBSERVATION_CONTINUOUS_LENGTH);
         updateObservation();
-
-        if (withGraphics) {
-            initFrame();
-        }
     }
-    private boolean withGraphics;
     @Setter
     private int gameState;
     private int score;
@@ -109,13 +104,12 @@ public class FlappyBird extends Frame implements Environment {
             restartGame();
         }
 
-        if (withGraphics) {
-            repaint();
-            try {
-                Thread.sleep(Constant.FPS);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
+        repaint();
+
+        try {
+            Thread.sleep(Constant.FPS);
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
         }
 
         return reward;
