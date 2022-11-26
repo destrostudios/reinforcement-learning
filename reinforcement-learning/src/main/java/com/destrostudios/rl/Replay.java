@@ -15,7 +15,7 @@ public class Replay implements AutoCloseable {
     private NDList action;
     private NDList postObservation;
     private NDArray reward;
-    private boolean terminal;
+    private boolean terminated;
 
     @Override
     public void close() {

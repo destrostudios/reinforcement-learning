@@ -87,7 +87,7 @@ public class QAgent implements Agent {
 
             NDArray[] targetQValue = new NDArray[replays.length];
             for (int i = 0; i < replays.length; i++) {
-                if (replays[i].isTerminal()) {
+                if (replays[i].isTerminated()) {
                     targetQValue[i] = replays[i].getReward();
                 } else {
                     targetQValue[i] = targetQReward.singletonOrThrow().get(i)
