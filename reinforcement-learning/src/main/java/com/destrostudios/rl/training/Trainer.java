@@ -101,9 +101,9 @@ public class Trainer {
     private void runLoop(Agent agent) {
         while (trainStep < config.getTrainStepsExplore()) {
             NDList action = agent.chooseAction(environment, true);
-            NDList preObservation = environment.getCurrentObservation();
+            NDList preObservation = environment.getObservation();
             float reward = environment.takeAction(action);
-            NDList postObservation = environment.getCurrentObservation();
+            NDList postObservation = environment.getObservation();
             NDManager subManager = baseManager.newSubManager();
             Replay replay = new Replay(subManager, preObservation, action, postObservation, subManager.create(reward), environment.isTerminated());
             replayBuffer.addReplay(replay);

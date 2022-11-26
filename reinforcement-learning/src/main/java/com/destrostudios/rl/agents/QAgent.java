@@ -40,7 +40,7 @@ public class QAgent implements Agent {
     @Override
     public NDList chooseAction(Environment environment, boolean isTraining) {
         ArrayList<NDList> actionSpace = environment.getActionSpace();
-        NDArray actionReward = trainer.evaluate(environment.getCurrentObservation()).singletonOrThrow().get(0);
+        NDArray actionReward = trainer.evaluate(environment.getObservation()).singletonOrThrow().get(0);
         logger.info(Arrays.toString(actionReward.toFloatArray()));
         int bestAction = Math.toIntExact(actionReward.argMax().getLong());
         return actionSpace.get(bestAction);

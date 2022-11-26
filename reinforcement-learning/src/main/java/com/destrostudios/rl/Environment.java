@@ -13,7 +13,7 @@ public interface Environment {
 
     float takeAction(NDList action);
 
-    NDList getCurrentObservation();
+    NDList getObservation();
 
     boolean isTerminated();
 }
