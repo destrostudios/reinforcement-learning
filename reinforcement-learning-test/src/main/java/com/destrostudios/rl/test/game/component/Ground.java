@@ -11,7 +11,7 @@ public class Ground {
 	private static final BufferedImage backgroundImage;
 	public static final int GROUND_HEIGHT;
 	static {
-		backgroundImage = GameUtil.loadBufferedImage(Constant.BG_IMG_PATH);
+		backgroundImage = GameUtil.loadBufferedImage(Constant.BACKGROUND_IMAGE_PATH);
 		GROUND_HEIGHT = backgroundImage.getHeight();
 	}
 

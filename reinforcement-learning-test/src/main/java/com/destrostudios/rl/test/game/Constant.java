@@ -19,7 +19,7 @@ public class Constant {
     public static final long[] OBSERVATION_SHAPE = new long[] { OBSERVATION_CONTINUOUS_LENGTH, OBSERVATION_WIDTH, OBSERVATION_HEIGHT };
 
     public static final String RESOURCE_PATH = "./reinforcement-learning-test/src/main/resources";
-    public static final String BG_IMG_PATH = RESOURCE_PATH + "/img/background.png";
+    public static final String BACKGROUND_IMAGE_PATH = RESOURCE_PATH + "/img/background.png";
     public static final String BIRDS_IMAGE_PATH = RESOURCE_PATH + "/img/0.png";
     public static final String[] PIPE_IMAGE_PATHS = {
         RESOURCE_PATH + "/img/pipe.png",

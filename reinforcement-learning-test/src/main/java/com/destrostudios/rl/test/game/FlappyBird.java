@@ -27,7 +27,6 @@ public class FlappyBird implements Environment {
         ground = new Ground();
         bird = new Bird(this);
         pipes = new Pipes();
-
         image = new BufferedImage(Constant.FRAME_WIDTH, Constant.FRAME_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
         continuousObservation = new NDContinuousArray(Constant.OBSERVATION_CONTINUOUS_LENGTH);
         updateObservation();
@@ -56,13 +55,9 @@ public class FlappyBird implements Environment {
     @Override
     public float takeAction(NDList action) {
         if (terminated) {
-            restartGame();
+            restart();
         }
 
-        terminated = false;
-
-        // action[0] == 1 : do nothing
-        // action[1] == 1 : flap the bird
         boolean isFlapAction = (action.singletonOrThrow().getInt(1) == 1);
         if (isFlapAction) {
             bird.flap();
@@ -99,10 +94,11 @@ public class FlappyBird implements Environment {
         observation = continuousObservation.push(currentObservation);
     }
 
-    private void restartGame() {
+    private void restart() {
         bird.reset();
         pipes.reset();
         score = 0;
+        terminated = false;
     }
 
     private void drawImage() {
