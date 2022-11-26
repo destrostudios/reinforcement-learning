@@ -100,7 +100,7 @@ public class Trainer {
 
     private void runLoop(Agent agent) {
         while (trainStep < config.getTrainStepsExplore()) {
-            NDList action = agent.chooseAction(environment, true);
+            NDList action = agent.chooseAction(environment);
             NDList preObservation = environment.getObservation();
             float reward = environment.takeAction(action);
             NDList postObservation = environment.getObservation();

@@ -38,7 +38,7 @@ public class QAgent implements Agent {
     private float rewardDiscount; // The reward discount to apply to rewards from future states
 
     @Override
-    public NDList chooseAction(Environment environment, boolean isTraining) {
+    public NDList chooseAction(Environment environment) {
         ArrayList<NDList> actionSpace = environment.getActionSpace();
         NDArray actionReward = trainer.evaluate(environment.getObservation()).singletonOrThrow().get(0);
         logger.info(Arrays.toString(actionReward.toFloatArray()));

@@ -31,12 +31,12 @@ public class EpsilonGreedyAgent implements Agent {
     private int counter;
 
     @Override
-    public NDList chooseAction(Environment environment, boolean isTraining) {
-        if (isTraining && (RandomUtils.random() < exploreRate.getNewValue(counter++))) {
+    public NDList chooseAction(Environment environment) {
+        if (RandomUtils.random() < exploreRate.getNewValue(counter++)) {
             logger.info("***********RANDOM ACTION***********");
             return environment.getActionSpace().get(RandomUtils.nextInt(environment.getActionSpace().size()));
         }
-        return baseAgent.chooseAction(environment, isTraining);
+        return baseAgent.chooseAction(environment);
     }
 
     @Override

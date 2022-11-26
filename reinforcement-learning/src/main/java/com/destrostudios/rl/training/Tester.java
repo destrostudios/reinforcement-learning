@@ -19,7 +19,7 @@ public class Tester {
         try (ai.djl.training.Trainer trainer = model.newTrainer(config.getTrainingConfig())) {
             Agent agent = new QAgent(trainer, config.getRewardDiscount());
             while (true) {
-                NDList action = agent.chooseAction(environment, false);
+                NDList action = agent.chooseAction(environment);
                 environment.takeAction(action);
             }
         }
