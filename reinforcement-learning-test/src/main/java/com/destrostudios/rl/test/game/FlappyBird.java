@@ -14,22 +14,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
-public class FlappyBird extends Frame implements Environment {
+public class FlappyBird implements Environment {
 
     private static final Logger logger = LoggerFactory.getLogger(FlappyBird.class);
+
     public static final int GAME_START = 1;
     public static final int GAME_OVER = 2;
     private static final int[] DO_NOTHING = {1, 0};
     private static final int[] FLAP = {0, 1};
 
     public FlappyBird() {
-        initFrame();
-
         gameState = GAME_START;
         ground = new Ground();
         bird = new Bird(this);
@@ -47,6 +44,7 @@ public class FlappyBird extends Frame implements Environment {
     private GameElementLayer gameElement;
     @Getter
     private ArrayList<NDList> actionSpace;
+    @Getter
     private BufferedImage image;
     private NDContinuousArray continuousObservation;
     @Setter
@@ -56,21 +54,6 @@ public class FlappyBird extends Frame implements Environment {
     private boolean terminated;
     @Getter
     private NDList observation;
-
-    private void initFrame() {
-        setTitle(Constant.GAME_TITLE);
-        setLocation(Constant.FRAME_X, Constant.FRAME_Y);
-        setSize(Constant.FRAME_WIDTH, Constant.FRAME_HEIGHT);
-        setResizable(false);
-        setVisible(true);
-        addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowClosing(WindowEvent evt) {
-                System.exit(0);
-            }
-        });
-    }
 
     @Override
     public void initialize(NDManager manager) {
@@ -104,14 +87,6 @@ public class FlappyBird extends Frame implements Environment {
             restartGame();
         }
 
-        repaint();
-
-        try {
-            Thread.sleep(Constant.FPS);
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        }
-
         return reward;
     }
 
@@ -139,10 +114,5 @@ public class FlappyBird extends Frame implements Environment {
         ground.draw(graphics);
         bird.draw(graphics);
         gameElement.draw(graphics);
-    }
-
-    @Override
-    public void update(Graphics graphics) {
-        graphics.drawImage(image, 0, 0, null);
     }
 }

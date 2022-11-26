@@ -10,7 +10,7 @@ public class Constant {
     public static final int FRAME_HEIGHT = 512;
     public static final int WINDOW_BAR_HEIGHT = 30;
 
-    public static final int FPS = 1000 / 30;
+    public static final int FPS = 1000 / 60;
     public static final int GAME_SPEED = 6;
 
     public static final int OBSERVATION_CONTINUOUS_LENGTH = 4;
