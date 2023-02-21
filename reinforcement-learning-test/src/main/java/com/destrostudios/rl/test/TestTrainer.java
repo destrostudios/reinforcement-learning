@@ -17,7 +17,7 @@ public class TestTrainer {
         new GameWindow(flappyBird);
         Model model = TestModelLoader.loadModel();
         Trainer trainer = new Trainer(flappyBird, TrainerConfig.builder()
-                .shape(Constant.OBSERVATION_SHAPE)
+                .shapes(Constant.SHAPES)
                 .build());
         trainer.train(model);
     }

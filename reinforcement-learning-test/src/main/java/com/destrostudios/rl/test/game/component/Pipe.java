@@ -34,6 +34,7 @@ public class Pipe {
     }
     @Getter
     private int x;
+    @Getter
     private int y;
     private int height;
     @Getter

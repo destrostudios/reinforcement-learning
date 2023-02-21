@@ -1,5 +1,7 @@
 package com.destrostudios.rl.test.game;
 
+import ai.djl.ndarray.types.Shape;
+
 public class Constant {
 
     public static final String GAME_TITLE = "RL Flappy Bird";
@@ -16,7 +18,10 @@ public class Constant {
     public static final int OBSERVATION_CONTINUOUS_LENGTH = 4;
     public static final int OBSERVATION_WIDTH = 80;
     public static final int OBSERVATION_HEIGHT = 80;
-    public static final long[] OBSERVATION_SHAPE = new long[] { OBSERVATION_CONTINUOUS_LENGTH, OBSERVATION_WIDTH, OBSERVATION_HEIGHT };
+    public static final Shape[] SHAPES = new Shape[] {
+        new Shape(2, 6),
+        new Shape(2, 2)
+    };
 
     public static final String RESOURCE_PATH = "./reinforcement-learning-test/src/main/resources";
     public static final String BACKGROUND_IMAGE_PATH = RESOURCE_PATH + "/img/background.png";

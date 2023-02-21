@@ -1,9 +1,9 @@
 package com.destrostudios.rl.training;
 
+import ai.djl.ndarray.types.Shape;
 import ai.djl.training.DefaultTrainingConfig;
 import ai.djl.training.TrainingConfig;
 import ai.djl.training.evaluator.Accuracy;
-import ai.djl.training.initializer.NormalInitializer;
 import ai.djl.training.listener.TrainingListener;
 import ai.djl.training.loss.Loss;
 import ai.djl.training.optimizer.Adam;
@@ -17,8 +17,7 @@ import lombok.*;
 @Getter
 public class TrainerConfig {
 
-    @Builder.Default
-    private long[] shape = new long[0];
+    private Shape[] shapes;
     @Builder.Default
     private int replayBatchSize = 32;
     @Builder.Default
@@ -26,13 +25,13 @@ public class TrainerConfig {
     @Builder.Default
     private float rewardDiscount = 0.9f; // Decay rate of past observations
     @Builder.Default
-    private float initialEpsilon = 0.01f;
+    private float initialEpsilon = 1;
     @Builder.Default
-    private float finalEpsilon = 0.0001f;
+    private float finalEpsilon = 0.001f;
     @Builder.Default
-    private int environmentStepsObserve = 1000; // Environment steps to observe before training
+    private int environmentStepsExplore = 50000; // Train steps over which to anneal epsilon
     @Builder.Default
-    private int trainStepsExplore = 3000000; // Train steps over which to anneal epsilon
+    private int trainStepsTotal = 3000000;
     @Builder.Default
     private int trainStepsSaveInterval = 100000; // Save model every x train steps
     @Builder.Default
@@ -40,9 +39,9 @@ public class TrainerConfig {
 
     public static DefaultTrainingConfig getDefaultTrainingConfig() {
         return new DefaultTrainingConfig(Loss.l2Loss())
-                .optOptimizer(Adam.builder().optLearningRateTracker(Tracker.fixed(1e-6f)).build())
-                .addEvaluator(new Accuracy())
-                .optInitializer(new NormalInitializer())
+                .optOptimizer(Adam.builder().optLearningRateTracker(Tracker.fixed(0.00001f)).build())
+                //.addEvaluator(new Accuracy())
+                //.optInitializer(new NormalInitializer())
                 .addTrainingListeners(TrainingListener.Defaults.basic());
     }
 }

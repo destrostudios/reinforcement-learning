@@ -1,19 +1,22 @@
 package com.destrostudios.rl;
 
+import ai.djl.modality.rl.ActionSpace;
 import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.NDManager;
 
-import java.util.ArrayList;
+public interface Environment<Observation> {
 
-public interface Environment {
+    void initialize(NDManager baseManager);
 
-    void initialize(NDManager manager);
+    void reset();
 
-    ArrayList<NDList> getActionSpace();
+    ActionSpace getActionSpace();
 
     float takeAction(NDList action);
 
-    NDList getObservation();
+    Observation getObservation();
+
+    NDList mapObservation(NDManager manager, Observation observation);
 
     boolean isTerminated();
 }

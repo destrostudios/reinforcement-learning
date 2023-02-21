@@ -45,6 +45,7 @@ public class Bird {
     private int y;
     @Getter
     private Rectangle birdCollisionRect;
+    @Getter
     private int velocity = 0; // Bird's velocity along Y, default same as playerFlapped
 
     public void update() {
@@ -56,7 +57,7 @@ public class Bird {
     }
 
     public boolean isBelowOrAbovePipeHoles() {
-        return ((birdCollisionRect.y < Pipes.MIN_Y) || (birdCollisionRect.y > (Pipes.MAX_Y + Pipes.VERTICAL_INTERVAL)));
+        return ((birdCollisionRect.y < (Pipes.MIN_Y - Pipes.VERTICAL_INTERVAL)) || (birdCollisionRect.y > Pipes.MAX_Y));
     }
 
     public boolean isOutOfBounds() {

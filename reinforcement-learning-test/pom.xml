@@ -18,6 +18,10 @@
             <artifactId>reinforcement-learning</artifactId>
         </dependency>
         <dependency>
+            <groupId>ai.djl</groupId>
+            <artifactId>model-zoo</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>

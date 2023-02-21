@@ -2,6 +2,8 @@ package com.destrostudios.rl.test.game.component;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.destrostudios.rl.test.game.Constant;
 import com.destrostudios.rl.test.game.GameUtil;
@@ -21,6 +23,8 @@ public class Pipes {
     private ArrayList<Pipe> pipes;
     @Getter
     private float scoreReward;
+    private Pipe previousPipe;
+    private Pipe nextPipe;
 
     public void update(Bird bird) {
         updatePipes(bird);
@@ -41,7 +45,7 @@ public class Pipes {
     }
 
     private void generatePipesAndCheckDistance(Bird bird) {
-        scoreReward = 0.2f;
+        scoreReward = 0;
         if (pipes.size() == 0) {
             int topHeight = GameUtil.getRandomNumber(MIN_Y, MAX_Y + 1);
 
@@ -54,23 +58,44 @@ public class Pipes {
             pipes.add(top);
             pipes.add(bottom);
         } else {
-            Pipe lastPipe = pipes.get(pipes.size() - 1);
-            int currentDistance = lastPipe.getX() - bird.getX() + Bird.BIRD_WIDTH / 2;
-            int SCORE_DISTANCE = (2 * Pipe.PIPE_WIDTH) + HORIZONTAL_INTERVAL;
-            if (pipes.size() >= PipePool.FULL_PIPE) {
-                if ((currentDistance <= (SCORE_DISTANCE + Pipe.PIPE_WIDTH * 3/2))
-                && (currentDistance > (SCORE_DISTANCE + Pipe.PIPE_WIDTH * 3/2 - Constant.GAME_SPEED))) {
-                    scoreReward = 0.8f;
-                }
-                if ((currentDistance <= SCORE_DISTANCE)
-                && (currentDistance > (SCORE_DISTANCE - Constant.GAME_SPEED))) {
-                    scoreReward = 1;
-                }
+            Pipe tmpNextPipe = nextPipe;
+            previousPipe = getPreviousPipe(bird);
+            nextPipe = getNextPipe(bird);
+            if ((tmpNextPipe != null) && (nextPipe != tmpNextPipe)) {
+                scoreReward = 10;
             }
+            Pipe lastPipe = pipes.get(pipes.size() - 1);
             if (lastPipe.isInFrame()) {
                 addNormalPipe(lastPipe);
             }
         }
+    }
+
+    public int getNextPipeX() {
+        return (nextPipe != null ? nextPipe.getX() : -100);
+    }
+
+    public int getNextPipeHoleY() {
+        return (nextPipe != null ? nextPipe.getY() - (VERTICAL_INTERVAL / 2) : (Constant.FRAME_HEIGHT / 2));
+    }
+
+    public int getPreviousPipeX() {
+        return (previousPipe != null ? previousPipe.getX() : -100);
+    }
+
+    public int getPreviousPipeHoleY() {
+        return (previousPipe != null ? previousPipe.getY() - (VERTICAL_INTERVAL / 2) : (Constant.FRAME_HEIGHT / 2));
+    }
+
+    private Pipe getNextPipe(Bird bird) {
+        return pipes.stream().filter(pipe -> pipe.getX() > bird.getBirdCollisionRect().getX()).skip(1).findFirst().orElse(null);
+    }
+
+    private Pipe getPreviousPipe(Bird bird) {
+        List<Pipe> previousPipes = pipes.stream()
+                .filter(pipe -> pipe.getX() <= bird.getBirdCollisionRect().getX())
+                .collect(Collectors.toList());
+        return ((previousPipes.size() > 0) ? previousPipes.get(1) : null);
     }
 
     private void addNormalPipe(Pipe lastPipe) {
@@ -102,5 +127,7 @@ public class Pipes {
             PipePool.giveBack(pipe);
         }
         pipes.clear();
+        previousPipe = null;
+        nextPipe = null;
     }
 }

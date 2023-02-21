@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <version.reinforcement-learning>1.0.0</version.reinforcement-learning>
-        <version.djl>0.8.0</version.djl>
+        <version.djl>0.19.0</version.djl>
         <version.slf4j>1.7.26</version.slf4j>
     </properties>
     <build>
@@ -55,6 +55,11 @@
                 <artifactId>mxnet-native-auto</artifactId>
                 <version>1.7.0-backport</version>
                 <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>ai.djl</groupId>
+                <artifactId>model-zoo</artifactId>
+                <version>${version.djl}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

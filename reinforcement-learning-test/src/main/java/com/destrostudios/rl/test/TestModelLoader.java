@@ -2,6 +2,11 @@ package com.destrostudios.rl.test;
 
 import ai.djl.MalformedModelException;
 import ai.djl.Model;
+import ai.djl.basicmodelzoo.basic.Mlp;
+import ai.djl.ndarray.NDArray;
+import ai.djl.ndarray.NDArrays;
+import ai.djl.ndarray.NDList;
+import ai.djl.ndarray.types.DataType;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.nn.Activation;
 import ai.djl.nn.Blocks;
@@ -20,44 +25,21 @@ public class TestModelLoader {
     public static Model loadModel() throws IOException, MalformedModelException {
         Model model = Model.newInstance("QNetwork");
         model.setBlock(getBlock());
-        model.load(Paths.get(MODEL_PATH), "dqn-trained");
+        // model.load(Paths.get(MODEL_PATH), "dqn-trained");
         return model;
     }
 
     private static SequentialBlock getBlock() {
-        // conv -> conv -> conv -> fc -> fc
         return new SequentialBlock()
-                .add(Conv2d.builder()
-                        .setKernelShape(new Shape(8, 8))
-                        .optStride(new Shape(4, 4))
-                        .optPadding(new Shape(3, 3))
-                        .setFilters(4)
-                        .build())
-                .add(Activation::relu)
+            .add(arrays -> {
+                NDArray observation = arrays.get(0); // Shape(N, 6)
+                NDArray action = arrays.get(1).toType(DataType.FLOAT32, true); // Shape(N, 2)
 
-                .add(Conv2d.builder()
-                        .setKernelShape(new Shape(4, 4))
-                        .optStride(new Shape(2, 2))
-                        .setFilters(32)
-                        .build())
-                .add(Activation::relu)
+                // Concatenate to a combined vector of Shape(N, 8)
+                NDArray combined = NDArrays.concat(new NDList(observation, action), 1);
 
-                .add(Conv2d.builder()
-                        .setKernelShape(new Shape(3, 3))
-                        .optStride(new Shape(1, 1))
-                        .setFilters(64)
-                        .build())
-                .add(Activation::relu)
-
-                .add(Blocks.batchFlattenBlock())
-
-                .add(Linear.builder()
-                        .setUnits(512)
-                        .build())
-                .add(Activation::relu)
-
-                .add(Linear.builder()
-                        .setUnits(2)
-                        .build());
+                return new NDList(combined);
+            })
+            .add(new Mlp(8, 1, new int[]{ 512, 512 }));
     }
 }
