@@ -8,11 +8,20 @@
     <modules>
         <module>reinforcement-learning</module>
         <module>reinforcement-learning-test</module>
+        <module>rl4j-api</module>
+        <module>rl4j-core</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.dl4j>1.0.0-M1.1</version.dl4j>
+        <version.jackson>2.12.2</version.jackson>
+        <version.junit-jupiter>5.8.0-M1</version.junit-jupiter>
+        <version.lombok>1.18.24</version.lombok>
+        <version.mockito>3.3.3</version.mockito>
+        <version.mockito-junit-jupiter>3.8.0</version.mockito-junit-jupiter>
+        <version.nd4j>1.0.0-M2.1</version.nd4j>
+        <version.nd4j-common-tests>1.0.0-M1.1</version.nd4j-common-tests>
         <version.reinforcement-learning>1.0.0</version.reinforcement-learning>
-        <version.djl>0.19.0</version.djl>
         <version.slf4j>1.7.26</version.slf4j>
     </properties>
     <build>
@@ -40,26 +49,39 @@
                 <version>${version.reinforcement-learning}</version>
             </dependency>
             <dependency>
-                <groupId>ai.djl</groupId>
-                <artifactId>api</artifactId>
-                <version>${version.djl}</version>
+                <groupId>com.destrostudios.rl</groupId>
+                <artifactId>rl4j-api</artifactId>
+                <version>${version.reinforcement-learning}</version>
             </dependency>
             <dependency>
-                <groupId>ai.djl.mxnet</groupId>
-                <artifactId>mxnet-engine</artifactId>
-                <version>${version.djl}</version>
-                <scope>runtime</scope>
+                <groupId>com.destrostudios.rl</groupId>
+                <artifactId>rl4j-core</artifactId>
+                <version>${version.reinforcement-learning}</version>
             </dependency>
             <dependency>
-                <groupId>ai.djl.mxnet</groupId>
-                <artifactId>mxnet-native-auto</artifactId>
-                <version>1.7.0-backport</version>
-                <scope>runtime</scope>
+                <groupId>com.destrostudios.rl</groupId>
+                <artifactId>rl4j-core</artifactId>
+                <version>${version.reinforcement-learning}</version>
             </dependency>
             <dependency>
-                <groupId>ai.djl</groupId>
-                <artifactId>model-zoo</artifactId>
-                <version>${version.djl}</version>
+                <groupId>org.nd4j</groupId>
+                <artifactId>nd4j-api</artifactId>
+                <version>${version.nd4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>nd4j-cuda-11.6-platform</artifactId>
+                <version>${version.nd4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.deeplearning4j</groupId>
+                <artifactId>deeplearning4j-core</artifactId>
+                <version>${version.dl4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${version.jackson}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -74,8 +96,32 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.24</version>
+                <version>${version.lombok}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${version.junit-jupiter}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${version.mockito}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>${version.mockito-junit-jupiter}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.nd4j</groupId>
+                <artifactId>nd4j-common-tests</artifactId>
+                <version>${version.nd4j-common-tests}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

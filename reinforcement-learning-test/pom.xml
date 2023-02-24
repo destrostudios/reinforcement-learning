@@ -18,8 +18,16 @@
             <artifactId>reinforcement-learning</artifactId>
         </dependency>
         <dependency>
-            <groupId>ai.djl</groupId>
-            <artifactId>model-zoo</artifactId>
+            <groupId>com.destrostudios.rl</groupId>
+            <artifactId>rl4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.destrostudios.rl</groupId>
+            <artifactId>rl4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-cuda-11.6-platform</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
