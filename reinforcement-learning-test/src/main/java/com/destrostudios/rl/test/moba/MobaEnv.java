@@ -3,19 +3,19 @@ package com.destrostudios.rl.test.moba;
 import com.destrostudios.rl.test.moba.objects.Player;
 import lombok.Getter;
 import org.deeplearning4j.rl4j.environment.Environment;
-import org.deeplearning4j.rl4j.environment.IntegerActionSchema;
-import org.deeplearning4j.rl4j.environment.Schema;
 import org.deeplearning4j.rl4j.environment.StepResult;
+import org.deeplearning4j.rl4j.environment.action.IntegerAction;
+import org.deeplearning4j.rl4j.environment.action.space.IntegerActionSpace;
 import org.nd4j.linalg.api.rng.Random;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MobaEnv implements Environment<Integer> {
+public class MobaEnv implements Environment<IntegerAction> {
 
     public MobaEnv(Random random) {
-        schema = new Schema<>(new IntegerActionSchema(ACTIONS_COUNT, 0, random));
+        actionSpace = new IntegerActionSpace(ACTIONS_COUNT, 0, random);
     }
     /*
     -> do nothing
@@ -31,7 +31,7 @@ public class MobaEnv implements Environment<Integer> {
     */
     public static final int ACTIONS_COUNT = 1 + 4 + (int) Math.pow(Player.ATTACK_RANGE + 1, 2);
     @Getter
-    private Schema<Integer> schema;
+    private IntegerActionSpace actionSpace;
     @Getter
     private MobaMap map;
 
@@ -42,11 +42,12 @@ public class MobaEnv implements Environment<Integer> {
     }
 
     @Override
-    public StepResult step(Integer action) {
+    public StepResult step(IntegerAction integerAction) {
         MobaObject player = map.getPlayer();
         int team1HealthOld = map.getTeamHealth(1);
         int team2HealthOld = map.getTeamHealth(-1);
         double reward = 0;
+        int action = integerAction.toInteger();
         if (action != 0) {
             int remainingActionIndex = action - 1;
             if (remainingActionIndex < 4) {

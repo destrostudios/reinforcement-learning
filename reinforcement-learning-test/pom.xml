@@ -19,11 +19,7 @@
         </dependency>
         <dependency>
             <groupId>com.destrostudios.rl</groupId>
-            <artifactId>rl4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.destrostudios.rl</groupId>
-            <artifactId>rl4j-core</artifactId>
+            <artifactId>rl4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.nd4j</groupId>

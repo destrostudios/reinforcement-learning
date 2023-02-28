@@ -10,24 +10,27 @@ import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.rl4j.agent.Agent;
-import org.deeplearning4j.rl4j.agent.AgentLearner;
-import org.deeplearning4j.rl4j.agent.IAgentLearner;
+import org.deeplearning4j.rl4j.agent.LearningAgent;
+import org.deeplearning4j.rl4j.agent.SteppingAgent;
 import org.deeplearning4j.rl4j.agent.learning.algorithm.dqn.BaseTransitionTDAlgorithm;
+import org.deeplearning4j.rl4j.agent.learning.history.DefaultHistoryProcessor;
+import org.deeplearning4j.rl4j.agent.learning.history.HistoryProcessor;
 import org.deeplearning4j.rl4j.agent.learning.update.updater.NeuralNetUpdaterConfiguration;
 import org.deeplearning4j.rl4j.agent.listener.AgentListener;
 import org.deeplearning4j.rl4j.builder.DoubleDQNBuilder;
 import org.deeplearning4j.rl4j.environment.Environment;
 import org.deeplearning4j.rl4j.environment.StepResult;
+import org.deeplearning4j.rl4j.environment.action.IntegerAction;
+import org.deeplearning4j.rl4j.environment.observation.Observation;
+import org.deeplearning4j.rl4j.environment.observation.transform.TransformProcess;
+import org.deeplearning4j.rl4j.environment.observation.transform.operation.ArrayToINDArrayTransform;
 import org.deeplearning4j.rl4j.experience.ReplayMemoryExperienceHandler;
 import org.deeplearning4j.rl4j.network.ChannelToNetworkInputMapper;
-import org.deeplearning4j.rl4j.network.ITrainableNeuralNet;
 import org.deeplearning4j.rl4j.network.QNetwork;
-import org.deeplearning4j.rl4j.observation.Observation;
-import org.deeplearning4j.rl4j.observation.transform.TransformProcess;
-import org.deeplearning4j.rl4j.observation.transform.operation.ArrayToINDArrayTransform;
+import org.deeplearning4j.rl4j.network.TrainableNeuralNet;
 import org.deeplearning4j.rl4j.policy.EpsGreedy;
-import org.deeplearning4j.rl4j.trainer.ITrainer;
 import org.deeplearning4j.rl4j.trainer.SyncTrainer;
+import org.deeplearning4j.rl4j.trainer.Trainer;
 import org.deeplearning4j.rl4j.util.Constants;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.api.rng.Random;
@@ -49,7 +52,7 @@ public class TestFlappyBird {
 
     public static void main(String[] args) {
         Random rnd = Nd4j.getRandomFactory().getNewRandomInstance(123);
-        Builder<Environment<Integer>> environmentBuilder = () -> {
+        Builder<Environment<IntegerAction>> environmentBuilder = () -> {
             FlappyBird flappyBird = new FlappyBird(rnd);
             new GameWindow(flappyBird).setVisible(true);
             return flappyBird;
@@ -57,16 +60,19 @@ public class TestFlappyBird {
         Builder<TransformProcess> transformProcessBuilder = () -> TransformProcess.builder()
                 .transform("mydata", new ArrayToINDArrayTransform())
                 .build(TRANSFORM_PROCESS_OUTPUT_CHANNELS);
+        Builder<HistoryProcessor<Observation>> defaultHistoryProcessorBuilder = DefaultHistoryProcessor::new;
 
-        List<AgentListener<Integer>> listeners = new ArrayList<AgentListener<Integer>>() {
+        List<AgentListener<Observation, IntegerAction>> listeners = new ArrayList<AgentListener<Observation, IntegerAction>>() {
             {
                 add(new EpisodeScorePrinter());
             }
         };
 
-        Builder<IAgentLearner<Integer>> builder = setupDoubleDQN(environmentBuilder, transformProcessBuilder, listeners, rnd);
+        TrainableNeuralNet network = buildQNetwork();
 
-        ITrainer trainer = SyncTrainer.<Integer>builder()
+        Builder<LearningAgent<Observation, IntegerAction>> builder = setupDoubleDQN(network, environmentBuilder, transformProcessBuilder, defaultHistoryProcessorBuilder, listeners, rnd);
+
+        Trainer trainer = SyncTrainer.<Observation,IntegerAction>builder()
                 .agentLearnerBuilder(builder)
                 .stoppingCondition(t -> t.getEpisodeCount() >= NUM_EPISODES)
                 .build();
@@ -78,13 +84,12 @@ public class TestFlappyBird {
         System.out.println(String.format("Total time for %d episodes: %fms", NUM_EPISODES, (after - before) / 1e6));
     }
 
-    private static Builder<IAgentLearner<Integer>> setupDoubleDQN(Builder<Environment<Integer>> environmentBuilder,
-                                                                  Builder<TransformProcess> transformProcessBuilder,
-                                                                  List<AgentListener<Integer>> listeners,
+    private static Builder<LearningAgent<Observation, IntegerAction>> setupDoubleDQN(TrainableNeuralNet network,Builder<Environment<IntegerAction>> environmentBuilder,
+                                                                  Builder<TransformProcess> transformProcessBuilder, Builder<HistoryProcessor<Observation>> defaultHistoryProcessorBuilder,
+                                                                  List<AgentListener<Observation, IntegerAction>> listeners,
                                                                   Random rnd) {
-        ITrainableNeuralNet network = buildQNetwork();
 
-        DoubleDQNBuilder.Configuration configuration = DoubleDQNBuilder.Configuration.builder()
+        DoubleDQNBuilder.Configuration configuration = DoubleDQNBuilder.Configuration.<Observation, IntegerAction>builder()
                 .policyConfiguration(EpsGreedy.Configuration.builder()
                         .epsilonNbStep(3000)
                         .minEpsilon(0)
@@ -99,11 +104,11 @@ public class TestFlappyBird {
                 .updateAlgorithmConfiguration(BaseTransitionTDAlgorithm.Configuration.builder()
                         .gamma(0.99)
                         .build())
-                .agentLearnerConfiguration(AgentLearner.Configuration.builder()
+                .agentLearnerConfiguration(LearningAgent.Configuration.builder()
                         .build())
                 .agentLearnerListeners(listeners)
                 .build();
-        return new DoubleDQNBuilder(configuration, network, environmentBuilder, transformProcessBuilder, rnd);
+        return new DoubleDQNBuilder(configuration, network, environmentBuilder, transformProcessBuilder, defaultHistoryProcessorBuilder, rnd);
     }
 
     private static ComputationGraphConfiguration.GraphBuilder buildBaseNetworkConfiguration() {
@@ -121,7 +126,7 @@ public class TestFlappyBird {
                 .layer("dl_out", new DenseLayer.Builder().activation(Activation.RELU).nOut(40).build(), "dl_1");
     }
 
-    private static ITrainableNeuralNet buildQNetwork() {
+    private static TrainableNeuralNet buildQNetwork() {
         ComputationGraphConfiguration conf = buildBaseNetworkConfiguration()
                 .addLayer("output", new OutputLayer.Builder(LossFunctions.LossFunction.MSE).activation(Activation.IDENTITY)
                         .nOut(FlappyBird.ACTIONS_COUNT).build(), "dl_out")
@@ -138,26 +143,26 @@ public class TestFlappyBird {
                 .build();
     }
 
-    private static class EpisodeScorePrinter implements AgentListener<Integer> {
+    private static class EpisodeScorePrinter implements AgentListener<Observation, IntegerAction> {
         private int episodeCount;
 
         @Override
-        public ListenerResponse onBeforeEpisode(Agent agent) {
+        public ListenerResponse onBeforeEpisode(SteppingAgent agent) {
             return ListenerResponse.CONTINUE;
         }
 
         @Override
-        public ListenerResponse onBeforeStep(Agent agent, Observation observation, Integer integer) {
+        public ListenerResponse onBeforeStep(SteppingAgent agent, Observation observation, IntegerAction integerAction) {
             return ListenerResponse.CONTINUE;
         }
 
         @Override
-        public ListenerResponse onAfterStep(Agent agent, StepResult stepResult) {
+        public ListenerResponse onAfterStep(SteppingAgent agent, StepResult stepResult) {
             return ListenerResponse.CONTINUE;
         }
 
         @Override
-        public void onAfterEpisode(Agent agent) {
+        public void onAfterEpisode(SteppingAgent agent) {
             FlappyBird environment = (FlappyBird) agent.getEnvironment();
             System.out.println(String.format("[%s] Episode %4d : reward = %4.2f, score = %d, highscore = %d", agent.getId(), episodeCount, agent.getReward(), environment.getScore(), environment.getHighscore()));
             ++episodeCount;

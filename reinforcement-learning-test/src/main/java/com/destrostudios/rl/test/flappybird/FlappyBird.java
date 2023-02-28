@@ -6,9 +6,9 @@ import com.destrostudios.rl.test.flappybird.component.Pipe;
 import com.destrostudios.rl.test.flappybird.component.Pipes;
 import lombok.Getter;
 import org.deeplearning4j.rl4j.environment.Environment;
-import org.deeplearning4j.rl4j.environment.IntegerActionSchema;
-import org.deeplearning4j.rl4j.environment.Schema;
 import org.deeplearning4j.rl4j.environment.StepResult;
+import org.deeplearning4j.rl4j.environment.action.IntegerAction;
+import org.deeplearning4j.rl4j.environment.action.space.IntegerActionSpace;
 import org.nd4j.linalg.api.rng.Random;
 
 import java.awt.*;
@@ -16,20 +16,20 @@ import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FlappyBird implements Environment<Integer> {
+public class FlappyBird implements Environment<IntegerAction> {
 
     public FlappyBird(Random random) {
         ground = new Ground();
         bird = new Bird(this);
         pipes = new Pipes();
         image = new BufferedImage(Constant.FRAME_WIDTH, Constant.FRAME_HEIGHT, BufferedImage.TYPE_4BYTE_ABGR);
-        schema = new Schema<>(new IntegerActionSchema(ACTIONS_COUNT, DO_NOTHING, random));
+        actionSpace = new IntegerActionSpace(ACTIONS_COUNT, DO_NOTHING, random);
     }
     public static final int ACTIONS_COUNT = 2;
     private static final int DO_NOTHING = 0;
     private static final int FLAP = 1;
     @Getter
-    private Schema<Integer> schema;
+    private IntegerActionSpace actionSpace;
     private Ground ground;
     private Bird bird;
     private Pipes pipes;
@@ -54,8 +54,8 @@ public class FlappyBird implements Environment<Integer> {
     }
 
     @Override
-    public StepResult step(Integer action) {
-        boolean isFlapAction = (action == FLAP);
+    public StepResult step(IntegerAction action) {
+        boolean isFlapAction = (action.toInteger() == FLAP);
         if (isFlapAction) {
             bird.flap();
         }

@@ -8,8 +8,7 @@
     <modules>
         <module>reinforcement-learning</module>
         <module>reinforcement-learning-test</module>
-        <module>rl4j-api</module>
-        <module>rl4j-core</module>
+        <module>rl4j</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,6 +23,7 @@
         <version.nd4j-cuda>1.0.0-M2.1</version.nd4j-cuda>
         <version.reinforcement-learning>1.0.0</version.reinforcement-learning>
         <version.slf4j>1.7.26</version.slf4j>
+        <version.typetools>0.6.3</version.typetools>
     </properties>
     <build>
         <plugins>
@@ -51,17 +51,7 @@
             </dependency>
             <dependency>
                 <groupId>com.destrostudios.rl</groupId>
-                <artifactId>rl4j-api</artifactId>
-                <version>${version.reinforcement-learning}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.destrostudios.rl</groupId>
-                <artifactId>rl4j-core</artifactId>
-                <version>${version.reinforcement-learning}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.destrostudios.rl</groupId>
-                <artifactId>rl4j-core</artifactId>
+                <artifactId>rl4j</artifactId>
                 <version>${version.reinforcement-learning}</version>
             </dependency>
             <dependency>
@@ -93,6 +83,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-simple</artifactId>
                 <version>${version.slf4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.jodah</groupId>
+                <artifactId>typetools</artifactId>
+                <version>${version.typetools}</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
