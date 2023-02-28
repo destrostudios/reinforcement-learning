@@ -27,10 +27,10 @@ import org.nd4j.linalg.factory.Nd4j;
 public class IntegerActionSchema implements IActionSchema<Integer> {
 
     @Getter
-    private final int actionSpaceSize;
+    protected final int actionSpaceSize;
 
-    private final int noOpAction;
-    private final Random rnd;
+    protected final int noOpAction;
+    protected final Random rnd;
 
     public IntegerActionSchema(int numActions, int noOpAction) {
         this(numActions, noOpAction, Nd4j.getRandom());

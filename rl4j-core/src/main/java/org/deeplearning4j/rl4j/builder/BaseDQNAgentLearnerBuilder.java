@@ -61,7 +61,7 @@ public abstract class BaseDQNAgentLearnerBuilder<CONFIGURATION_TYPE extends Base
 
     @Override
     protected IPolicy<Integer> buildPolicy() {
-        INeuralNetPolicy<Integer> greedyPolicy = new DQNPolicy<Integer>(networks.getThreadCurrentNetwork());
+        INeuralNetPolicy<Integer> greedyPolicy = new DQNPolicy<Integer>(getEnvironment(), networks.getThreadCurrentNetwork());
         IActionSchema<Integer> actionSchema = getEnvironment().getSchema().getActionSchema();
         return new EpsGreedy(greedyPolicy, actionSchema, configuration.getPolicyConfiguration(), rnd);
     }

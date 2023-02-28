@@ -23,24 +23,29 @@ public class MobaMap {
     public static final int WIDTH = 14;
     public static final int HEIGHT = 5;
     public static final int LANE_Y = 2;
-    public static final int PLAYER_SPAWN_X = 0;
-    public static final int PLAYER_SPAWN_Y = 0;
     public static final int MINION_SPAWN_INTERVAL = 20;
     @Getter
     private int frame;
     @Getter
     private LinkedList<MobaObject> objects = new LinkedList<>();
     @Getter
-    private MobaObject player = new Player(1, PLAYER_SPAWN_X, PLAYER_SPAWN_Y);
+    private MobaObject player;
     @Getter
     private MobaObject tower1 = new Tower(1, 0, LANE_Y);
     @Getter
     private MobaObject tower2 = new Tower(-1, WIDTH - 1, LANE_Y);
 
     public MobaMap() {
-        add(player);
         add(tower1);
         add(tower2);
+        int playerSpawnX;
+        int playerSpawnY;
+        do {
+            playerSpawnX = (int) (Math.random() * WIDTH);
+            playerSpawnY = (int) (Math.random() * HEIGHT);
+        } while (getObject(playerSpawnX, playerSpawnY) != null);
+        player = new Player(1, playerSpawnX, playerSpawnY);
+        add(player);
     }
 
     public void nextFrame() {

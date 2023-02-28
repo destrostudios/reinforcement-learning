@@ -20,6 +20,7 @@
 
 package org.deeplearning4j.rl4j.learning.async.nstep.discrete;
 
+import org.deeplearning4j.rl4j.environment.Environment;
 import org.deeplearning4j.rl4j.learning.configuration.AsyncQLearningConfiguration;
 import org.deeplearning4j.rl4j.mdp.MDP;
 import org.deeplearning4j.rl4j.network.configuration.DQNDenseNetworkConfiguration;
@@ -34,56 +35,56 @@ import org.deeplearning4j.rl4j.util.IDataManager;
 public class AsyncNStepQLearningDiscreteDense<OBSERVATION extends Encodable> extends AsyncNStepQLearningDiscrete<OBSERVATION> {
 
     @Deprecated
-    public AsyncNStepQLearningDiscreteDense(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn,
+    public AsyncNStepQLearningDiscreteDense(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn,
                                             AsyncNStepQLConfiguration conf, IDataManager dataManager) {
-        super(mdp, dqn, conf.toLearningConfiguration());
+        super(environment, mdp, dqn, conf.toLearningConfiguration());
         addListener(new DataManagerTrainingListener(dataManager));
     }
 
     @Deprecated
-    public AsyncNStepQLearningDiscreteDense(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn,
+    public AsyncNStepQLearningDiscreteDense(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn,
                                             AsyncNStepQLConfiguration conf) {
-        super(mdp, dqn, conf.toLearningConfiguration());
+        super(environment, mdp, dqn, conf.toLearningConfiguration());
     }
 
-    public AsyncNStepQLearningDiscreteDense(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn,
+    public AsyncNStepQLearningDiscreteDense(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn,
                                             AsyncQLearningConfiguration conf) {
-        super(mdp, dqn, conf);
+        super(environment, mdp, dqn, conf);
     }
 
     @Deprecated
-    public AsyncNStepQLearningDiscreteDense(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, DQNFactory factory,
+    public AsyncNStepQLearningDiscreteDense(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, DQNFactory factory,
                                             AsyncNStepQLConfiguration conf, IDataManager dataManager) {
-        this(mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf,
+        this(environment, mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf,
                 dataManager);
     }
 
     @Deprecated
-    public AsyncNStepQLearningDiscreteDense(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, DQNFactory factory,
+    public AsyncNStepQLearningDiscreteDense(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, DQNFactory factory,
                                             AsyncNStepQLConfiguration conf) {
-        this(mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf);
+        this(environment, mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf);
     }
 
-    public AsyncNStepQLearningDiscreteDense(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, DQNFactory factory,
+    public AsyncNStepQLearningDiscreteDense(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, DQNFactory factory,
                                             AsyncQLearningConfiguration conf) {
-        this(mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf);
+        this(environment, mdp, factory.buildDQN(mdp.getObservationSpace().getShape(), mdp.getActionSpace().getSize()), conf);
     }
 
     @Deprecated
-    public AsyncNStepQLearningDiscreteDense(MDP<OBSERVATION, Integer, DiscreteSpace> mdp,
+    public AsyncNStepQLearningDiscreteDense(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp,
                                             DQNFactoryStdDense.Configuration netConf, AsyncNStepQLConfiguration conf, IDataManager dataManager) {
-        this(mdp, new DQNFactoryStdDense(netConf.toNetworkConfiguration()), conf, dataManager);
+        this(environment, mdp, new DQNFactoryStdDense(netConf.toNetworkConfiguration()), conf, dataManager);
     }
 
     @Deprecated
-    public AsyncNStepQLearningDiscreteDense(MDP<OBSERVATION, Integer, DiscreteSpace> mdp,
+    public AsyncNStepQLearningDiscreteDense(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp,
                                             DQNFactoryStdDense.Configuration netConf, AsyncNStepQLConfiguration conf) {
-        this(mdp, new DQNFactoryStdDense(netConf.toNetworkConfiguration()), conf);
+        this(environment, mdp, new DQNFactoryStdDense(netConf.toNetworkConfiguration()), conf);
     }
 
-    public AsyncNStepQLearningDiscreteDense(MDP<OBSERVATION, Integer, DiscreteSpace> mdp,
+    public AsyncNStepQLearningDiscreteDense(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp,
                                             DQNDenseNetworkConfiguration netConf, AsyncQLearningConfiguration conf) {
-        this(mdp, new DQNFactoryStdDense(netConf), conf);
+        this(environment, mdp, new DQNFactoryStdDense(netConf), conf);
     }
 
 

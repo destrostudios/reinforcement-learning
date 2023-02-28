@@ -21,6 +21,7 @@
 package org.deeplearning4j.rl4j.learning.async.nstep.discrete;
 
 import lombok.Getter;
+import org.deeplearning4j.rl4j.environment.Environment;
 import org.deeplearning4j.rl4j.learning.async.AsyncThreadDiscrete;
 import org.deeplearning4j.rl4j.learning.async.IAsyncGlobal;
 import org.deeplearning4j.rl4j.learning.async.UpdateAlgorithm;
@@ -38,6 +39,7 @@ import org.nd4j.linalg.factory.Nd4j;
 
 public class AsyncNStepQLearningThreadDiscrete<OBSERVATION extends Encodable> extends AsyncThreadDiscrete<OBSERVATION, IDQN> {
 
+    final protected Environment environment;
     @Getter
     final protected AsyncQLearningConfiguration configuration;
     @Getter
@@ -47,10 +49,11 @@ public class AsyncNStepQLearningThreadDiscrete<OBSERVATION extends Encodable> ex
 
     final private Random rnd;
 
-    public AsyncNStepQLearningThreadDiscrete(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IAsyncGlobal<IDQN> asyncGlobal,
+    public AsyncNStepQLearningThreadDiscrete(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IAsyncGlobal<IDQN> asyncGlobal,
                                              AsyncQLearningConfiguration configuration,
                                              TrainingListenerList listeners, int threadNumber, int deviceNum) {
         super(asyncGlobal, mdp, listeners, threadNumber, deviceNum);
+        this.environment = environment;
         this.configuration = configuration;
         this.asyncGlobal = asyncGlobal;
         this.threadNumber = threadNumber;
@@ -65,7 +68,7 @@ public class AsyncNStepQLearningThreadDiscrete<OBSERVATION extends Encodable> ex
     }
 
     public Policy<Integer> getPolicy(IDQN nn) {
-        return new EpsGreedy(new DQNPolicy(nn), getMdp(), configuration.getUpdateStart(), configuration.getEpsilonNbStep(),
+        return new EpsGreedy(new DQNPolicy(environment, nn), getMdp(), configuration.getUpdateStart(), configuration.getEpsilonNbStep(),
                 rnd, configuration.getMinEpsilon(), this);
     }
 

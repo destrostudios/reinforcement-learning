@@ -60,7 +60,7 @@ public class NStepQLearningBuilder extends BaseAsyncAgentLearnerBuilder<NStepQLe
 
     @Override
     protected IPolicy<Integer> buildPolicy() {
-        INeuralNetPolicy<Integer> greedyPolicy = new DQNPolicy<Integer>(networks.getThreadCurrentNetwork());
+        INeuralNetPolicy<Integer> greedyPolicy = new DQNPolicy<Integer>(getEnvironment(), networks.getThreadCurrentNetwork());
         IActionSchema<Integer> actionSchema = getEnvironment().getSchema().getActionSchema();
         return new EpsGreedy(greedyPolicy, actionSchema, configuration.getPolicyConfiguration(), rnd);
     }

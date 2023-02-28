@@ -21,6 +21,7 @@
 package org.deeplearning4j.rl4j.policy;
 
 import lombok.AllArgsConstructor;
+import org.deeplearning4j.rl4j.environment.Environment;
 import org.deeplearning4j.rl4j.learning.Learning;
 import org.deeplearning4j.rl4j.network.CommonOutputNames;
 import org.deeplearning4j.rl4j.network.IOutputNeuralNet;
@@ -35,10 +36,11 @@ import java.io.IOException;
 @AllArgsConstructor
 public class DQNPolicy<OBSERVATION> extends Policy<Integer> {
 
+    final private Environment<Integer> environment;
     final private IOutputNeuralNet neuralNet;
 
-    public static <OBSERVATION extends Encodable> DQNPolicy<OBSERVATION> load(String path) throws IOException {
-        return new DQNPolicy<>(DQN.load(path));
+    public static <OBSERVATION extends Encodable> DQNPolicy<OBSERVATION> load(Environment<Integer> environment, String path) throws IOException {
+        return new DQNPolicy<>(environment, DQN.load(path));
     }
 
     public IOutputNeuralNet getNeuralNet() {
@@ -48,13 +50,13 @@ public class DQNPolicy<OBSERVATION> extends Policy<Integer> {
     @Override
     public Integer nextAction(Observation obs) {
         INDArray output = neuralNet.output(obs).get(CommonOutputNames.QValues);
-        return Learning.getMaxAction(output);
+        return Learning.getMaxAction(output, environment);
     }
 
     @Deprecated
     public Integer nextAction(INDArray input) {
         INDArray output = neuralNet.output(input).get(CommonOutputNames.QValues);
-        return Learning.getMaxAction(output);
+        return Learning.getMaxAction(output, environment);
     }
 
     public void save(String filename) throws IOException {

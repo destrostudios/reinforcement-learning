@@ -25,6 +25,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.deeplearning4j.rl4j.environment.Environment;
 import org.deeplearning4j.rl4j.learning.async.AsyncGlobal;
 import org.deeplearning4j.rl4j.learning.async.AsyncLearning;
 import org.deeplearning4j.rl4j.learning.async.AsyncThread;
@@ -39,6 +40,7 @@ import org.deeplearning4j.rl4j.space.DiscreteSpace;
 public abstract class AsyncNStepQLearningDiscrete<OBSERVATION extends Encodable>
         extends AsyncLearning<OBSERVATION, Integer, DiscreteSpace, IDQN> {
 
+    final public Environment<Integer> environment;
     @Getter
     final public AsyncQLearningConfiguration configuration;
     @Getter
@@ -47,7 +49,8 @@ public abstract class AsyncNStepQLearningDiscrete<OBSERVATION extends Encodable>
     final private AsyncGlobal<IDQN> asyncGlobal;
 
 
-    public AsyncNStepQLearningDiscrete(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn, AsyncQLearningConfiguration conf) {
+    public AsyncNStepQLearningDiscrete(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn, AsyncQLearningConfiguration conf) {
+        this.environment = environment;
         this.mdp = mdp;
         this.configuration = conf;
         this.asyncGlobal = new AsyncGlobal<>(dqn, conf);
@@ -55,7 +58,7 @@ public abstract class AsyncNStepQLearningDiscrete<OBSERVATION extends Encodable>
 
     @Override
     public AsyncThread newThread(int i, int deviceNum) {
-        return new AsyncNStepQLearningThreadDiscrete(mdp.newInstance(), asyncGlobal, configuration, getListeners(), i, deviceNum);
+        return new AsyncNStepQLearningThreadDiscrete(environment, mdp.newInstance(), asyncGlobal, configuration, getListeners(), i, deviceNum);
     }
 
     public IDQN getNeuralNet() {
@@ -63,7 +66,7 @@ public abstract class AsyncNStepQLearningDiscrete<OBSERVATION extends Encodable>
     }
 
     public IPolicy<Integer> getPolicy() {
-        return new DQNPolicy<OBSERVATION>(getNeuralNet());
+        return new DQNPolicy<OBSERVATION>(environment, getNeuralNet());
     }
 
     @Data

@@ -1,11 +1,7 @@
 package com.destrostudios.rl.test.moba;
 
-import com.destrostudios.rl.test.moba.objects.Player;
 import lombok.Getter;
-import org.deeplearning4j.rl4j.environment.Environment;
-import org.deeplearning4j.rl4j.environment.IntegerActionSchema;
-import org.deeplearning4j.rl4j.environment.Schema;
-import org.deeplearning4j.rl4j.environment.StepResult;
+import org.deeplearning4j.rl4j.environment.*;
 import org.nd4j.linalg.api.rng.Random;
 
 import java.util.HashMap;
@@ -15,7 +11,7 @@ import java.util.Map;
 public class MobaEnv implements Environment<Integer> {
 
     public MobaEnv(Random random) {
-        schema = new Schema<>(new IntegerActionSchema(ACTIONS_COUNT, 0, random));
+        schema = new Schema<>(new ValidIntegerActionSchema(ACTIONS_COUNT, 0, random, this));
     }
     /*
     -> do nothing
@@ -29,7 +25,7 @@ public class MobaEnv implements Environment<Integer> {
     8,9,10
     11,12,13
     */
-    public static final int ACTIONS_COUNT = 1 + 4 + (int) Math.pow(Player.ATTACK_RANGE + 1, 2);
+    public static final int ACTIONS_COUNT = 1 + 4 + 9;
     @Getter
     private Schema<Integer> schema;
     @Getter
@@ -42,7 +38,33 @@ public class MobaEnv implements Environment<Integer> {
     }
 
     @Override
+    public boolean isValidAction(Integer action) {
+        if (action != 0) {
+            MobaObject player = map.getPlayer();
+            int remainingActionIndex = action - 1;
+            if (remainingActionIndex < 4) {
+                switch (remainingActionIndex) {
+                    case 0: return (player.getX() > 0);
+                    case 1: return (player.getX() < (MobaMap.WIDTH - 1));
+                    case 2: return (player.getY() > 0);
+                    case 3: return (player.getY() < (MobaMap.HEIGHT - 1));
+                }
+            } else {
+                remainingActionIndex -= 4;
+                int targetX = player.getX() + ((remainingActionIndex % 3) - 1);
+                int targetY = player.getY() + ((remainingActionIndex / 3) - 1);
+                MobaObject target = map.getObject(targetX, targetY);
+                return ((target != null) && player.canAttack(target));
+            }
+        }
+        return true;
+    }
+
+    @Override
     public StepResult step(Integer action) {
+        if (!isValidAction(action)) {
+            System.out.println("?");
+        }
         MobaObject player = map.getPlayer();
         int team1HealthOld = map.getTeamHealth(1);
         int team2HealthOld = map.getTeamHealth(-1);
@@ -66,17 +88,15 @@ public class MobaEnv implements Environment<Integer> {
                 }
             } else {
                 remainingActionIndex -= 4;
-                int targetX = player.getX() + ((remainingActionIndex % (Player.ATTACK_RANGE + 1)) - 1);
-                int targetY = player.getY() + ((remainingActionIndex / (Player.ATTACK_RANGE + 1)) - 1);
+                int targetX = player.getX() + ((remainingActionIndex % 3) - 1);
+                int targetY = player.getY() + ((remainingActionIndex / 3) - 1);
                 player.attack(targetX, targetY);
-                // Avoid unnecessary attacks
-                reward -= 0.1f;
                 int team2HealthNew = map.getTeamHealth(-1);
-                reward += ((team2HealthOld - team2HealthNew) * 10);
+                reward += ((team2HealthOld - team2HealthNew) * 20);
             }
         }
         map.nextFrame();
-        if ((map.getFrame() % 10) == 0) {
+        if ((map.getFrame() % 1) == 0) {
             System.out.println(map.getAsciiImage());
         }
         reward += getTeamHealthChangeReward(team1HealthOld, team2HealthOld);

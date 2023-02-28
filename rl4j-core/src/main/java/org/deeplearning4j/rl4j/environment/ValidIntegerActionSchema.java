@@ -19,40 +19,28 @@
  */
 package org.deeplearning4j.rl4j.environment;
 
-import java.util.Map;
+import org.nd4j.linalg.api.rng.Random;
 
-public interface Environment<ACTION> {
+public class ValidIntegerActionSchema extends IntegerActionSchema {
 
-    /**
-     * @return The {@link Schema} of the environment
-     */
-    Schema<ACTION> getSchema();
-
-    /**
-     * Reset the environment's state to start a new episode.
-     * @return
-     */
-    Map<String, Object> reset();
-
-    default boolean isValidAction(ACTION action) {
-        return true;
+    public ValidIntegerActionSchema(int numActions, int noOpAction, Environment<Integer> environment) {
+        super(numActions, noOpAction);
+        this.environment = environment;
     }
 
-    /**
-     * Perform a single step.
-     *
-     * @param action The action taken
-     * @return A {@link StepResult} describing the result of the step.
-     */
-    StepResult step(ACTION action);
+    public ValidIntegerActionSchema(int numActions, int noOpAction, Random rnd, Environment<Integer> environment) {
+        super(numActions, noOpAction, rnd);
+        this.environment = environment;
+    }
+    private Environment<Integer> environment;
 
-    /**
-     * @return True if the episode is finished
-     */
-    boolean isEpisodeFinished();
-
-    /**
-     * Called when the agent is finished using this environment instance.
-     */
-    void close();
+    @Override
+    public Integer getRandomAction() {
+        // Good enough for now
+        int action;
+        do {
+            action = rnd.nextInt(actionSpaceSize);
+        } while (!environment.isValidAction(action));
+        return action;
+    }
 }

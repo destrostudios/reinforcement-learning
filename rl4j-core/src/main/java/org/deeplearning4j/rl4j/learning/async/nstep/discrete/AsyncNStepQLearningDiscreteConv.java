@@ -20,6 +20,7 @@
 
 package org.deeplearning4j.rl4j.learning.async.nstep.discrete;
 
+import org.deeplearning4j.rl4j.environment.Environment;
 import org.deeplearning4j.rl4j.learning.HistoryProcessor;
 import org.deeplearning4j.rl4j.learning.async.AsyncThread;
 import org.deeplearning4j.rl4j.learning.configuration.AsyncQLearningConfiguration;
@@ -38,36 +39,36 @@ public class AsyncNStepQLearningDiscreteConv<OBSERVATION extends Encodable> exte
     final private HistoryProcessor.Configuration hpconf;
 
     @Deprecated
-    public AsyncNStepQLearningDiscreteConv(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn,
+    public AsyncNStepQLearningDiscreteConv(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn,
                                            HistoryProcessor.Configuration hpconf, AsyncQLearningConfiguration conf, IDataManager dataManager) {
-        this(mdp, dqn, hpconf, conf);
+        this(environment, mdp, dqn, hpconf, conf);
         addListener(new DataManagerTrainingListener(dataManager));
     }
-    public AsyncNStepQLearningDiscreteConv(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn,
+    public AsyncNStepQLearningDiscreteConv(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, IDQN dqn,
                                            HistoryProcessor.Configuration hpconf, AsyncQLearningConfiguration conf) {
-        super(mdp, dqn, conf);
+        super(environment, mdp, dqn, conf);
         this.hpconf = hpconf;
         setHistoryProcessor(hpconf);
     }
 
     @Deprecated
-    public AsyncNStepQLearningDiscreteConv(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, DQNFactory factory,
+    public AsyncNStepQLearningDiscreteConv(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, DQNFactory factory,
                                            HistoryProcessor.Configuration hpconf, AsyncQLearningConfiguration conf, IDataManager dataManager) {
-        this(mdp, factory.buildDQN(hpconf.getShape(), mdp.getActionSpace().getSize()), hpconf, conf, dataManager);
+        this(environment, mdp, factory.buildDQN(hpconf.getShape(), mdp.getActionSpace().getSize()), hpconf, conf, dataManager);
     }
-    public AsyncNStepQLearningDiscreteConv(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, DQNFactory factory,
+    public AsyncNStepQLearningDiscreteConv(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, DQNFactory factory,
                                            HistoryProcessor.Configuration hpconf, AsyncQLearningConfiguration conf) {
-        this(mdp, factory.buildDQN(hpconf.getShape(), mdp.getActionSpace().getSize()), hpconf, conf);
+        this(environment, mdp, factory.buildDQN(hpconf.getShape(), mdp.getActionSpace().getSize()), hpconf, conf);
     }
 
     @Deprecated
-    public AsyncNStepQLearningDiscreteConv(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, NetworkConfiguration netConf,
+    public AsyncNStepQLearningDiscreteConv(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, NetworkConfiguration netConf,
                                            HistoryProcessor.Configuration hpconf, AsyncQLearningConfiguration conf, IDataManager dataManager) {
-        this(mdp, new DQNFactoryStdConv(netConf), hpconf, conf, dataManager);
+        this(environment, mdp, new DQNFactoryStdConv(netConf), hpconf, conf, dataManager);
     }
-    public AsyncNStepQLearningDiscreteConv(MDP<OBSERVATION, Integer, DiscreteSpace> mdp, NetworkConfiguration netConf,
+    public AsyncNStepQLearningDiscreteConv(Environment<Integer> environment, MDP<OBSERVATION, Integer, DiscreteSpace> mdp, NetworkConfiguration netConf,
                                            HistoryProcessor.Configuration hpconf, AsyncQLearningConfiguration conf) {
-        this(mdp, new DQNFactoryStdConv(netConf), hpconf, conf);
+        this(environment, mdp, new DQNFactoryStdConv(netConf), hpconf, conf);
     }
 
     @Override

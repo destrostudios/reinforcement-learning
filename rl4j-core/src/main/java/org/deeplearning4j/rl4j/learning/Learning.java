@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.deeplearning4j.rl4j.environment.Environment;
 import org.deeplearning4j.rl4j.network.NeuralNet;
 import org.deeplearning4j.rl4j.space.ActionSpace;
 import org.deeplearning4j.rl4j.space.Encodable;
@@ -44,6 +45,20 @@ public abstract class Learning<OBSERVATION extends Encodable, A, AS extends Acti
 
     public static Integer getMaxAction(INDArray vector) {
         return Nd4j.argMax(vector, Integer.MAX_VALUE).getInt(0);
+    }
+
+    public static Integer getMaxAction(INDArray vector, Environment<Integer> environment) {
+        Integer maxAction = null;
+        Double maxValue = null;
+        long numActions = vector.length();
+        for (int action = 0; action < numActions; action++) {
+            double value = vector.getDouble(action);
+            if ((maxAction == null) || (value > maxValue) && environment.isValidAction(action)) {
+                maxAction = action;
+                maxValue = value;
+            }
+        }
+        return maxAction;
     }
 
     public static int[] makeShape(int size, int[] shape) {

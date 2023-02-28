@@ -34,6 +34,7 @@ import org.deeplearning4j.rl4j.agent.learning.update.UpdateRule;
 import org.deeplearning4j.rl4j.agent.learning.update.updater.INeuralNetUpdater;
 import org.deeplearning4j.rl4j.agent.learning.update.updater.NeuralNetUpdaterConfiguration;
 import org.deeplearning4j.rl4j.agent.learning.update.updater.sync.SyncLabelsNeuralNetUpdater;
+import org.deeplearning4j.rl4j.environment.Environment;
 import org.deeplearning4j.rl4j.experience.ExperienceHandler;
 import org.deeplearning4j.rl4j.experience.ReplayMemoryExperienceHandler;
 import org.deeplearning4j.rl4j.learning.IHistoryProcessor;
@@ -78,20 +79,20 @@ public abstract class QLearningDiscrete<O extends Encodable> extends QLearning<O
         return mdp;
     }
 
-    public QLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLearningConfiguration conf, int epsilonNbStep) {
-        this(mdp, dqn, conf, epsilonNbStep, Nd4j.getRandomFactory().getNewRandomInstance(conf.getSeed()));
+    public QLearningDiscrete(Environment<Integer> environment, MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLearningConfiguration conf, int epsilonNbStep) {
+        this(environment, mdp, dqn, conf, epsilonNbStep, Nd4j.getRandomFactory().getNewRandomInstance(conf.getSeed()));
     }
 
-    public QLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLearningConfiguration conf, int epsilonNbStep, Random random) {
-        this(mdp, dqn, conf, epsilonNbStep, buildLearningBehavior(dqn, conf, random), random);
+    public QLearningDiscrete(Environment<Integer> environment, MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLearningConfiguration conf, int epsilonNbStep, Random random) {
+        this(environment, mdp, dqn, conf, epsilonNbStep, buildLearningBehavior(dqn, conf, random), random);
     }
 
-    public QLearningDiscrete(MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLearningConfiguration conf,
+    public QLearningDiscrete(Environment<Integer> environment, MDP<O, Integer, DiscreteSpace> mdp, IDQN dqn, QLearningConfiguration conf,
                              int epsilonNbStep, ILearningBehavior<Integer> learningBehavior, Random random) {
         this.configuration = conf;
         this.mdp = new LegacyMDPWrapper<>(mdp, null);
         qNetwork = dqn;
-        policy = new DQNPolicy(getQNetwork());
+        policy = new DQNPolicy(environment, getQNetwork());
         egPolicy = new EpsGreedy(policy, mdp, conf.getUpdateStart(), epsilonNbStep, random, conf.getMinEpsilon(),
                 this);
 
