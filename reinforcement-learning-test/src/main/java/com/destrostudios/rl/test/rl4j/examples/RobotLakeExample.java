@@ -18,7 +18,7 @@
  *  *****************************************************************************
  */
 
-package org.deeplearning4j.rl4j.examples;
+package com.destrostudios.rl.test.rl4j.examples;
 
 import org.apache.commons.lang3.builder.Builder;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
@@ -30,13 +30,11 @@ import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.rl4j.agent.SteppingAgent;
 import org.deeplearning4j.rl4j.agent.LearningAgent;
-import org.deeplearning4j.rl4j.agent.LearningAgent;
 import org.deeplearning4j.rl4j.agent.learning.algorithm.actorcritic.AdvantageActorCritic;
 import org.deeplearning4j.rl4j.agent.learning.algorithm.dqn.BaseTransitionTDAlgorithm;
 import org.deeplearning4j.rl4j.agent.learning.algorithm.nstepqlearning.NStepQLearning;
 import org.deeplearning4j.rl4j.agent.learning.history.DefaultHistoryProcessor;
 import org.deeplearning4j.rl4j.agent.learning.history.HistoryProcessor;
-import org.deeplearning4j.rl4j.agent.learning.history.VideoHistoryProcessor;
 import org.deeplearning4j.rl4j.agent.learning.update.updater.NeuralNetUpdaterConfiguration;
 import org.deeplearning4j.rl4j.agent.listener.AgentListener;
 import org.deeplearning4j.rl4j.builder.AdvantageActorCriticBuilder;
@@ -50,7 +48,7 @@ import org.deeplearning4j.rl4j.environment.observation.transform.TransformProces
 import org.deeplearning4j.rl4j.environment.observation.transform.operation.ArrayToINDArrayTransform;
 import org.deeplearning4j.rl4j.experience.ReplayMemoryExperienceHandler;
 import org.deeplearning4j.rl4j.experience.ObservationActionExperienceHandler;
-import org.deeplearning4j.rl4j.mdp.robotlake.RobotLake;
+import com.destrostudios.rl.test.rl4j.mdp.robotlake.RobotLake;
 import org.deeplearning4j.rl4j.network.ActorCriticNetwork;
 import org.deeplearning4j.rl4j.network.ChannelToNetworkInputMapper;
 import org.deeplearning4j.rl4j.network.TrainableNeuralNet;
@@ -66,8 +64,6 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,8 +97,8 @@ public class RobotLakeExample {
         //TrainableNeuralNet network = buildActorCriticNetwork();
         
         Builder<LearningAgent<Observation, IntegerAction>> builder = setupDoubleDQN(network,environmentBuilder, transformProcessBuilder, defaultHistoryProcessorBuilder,listeners, rnd);
-        //Builder<LearningAgent<Observation, IntegerAction>> builder = setupNStepQLearning(network,environmentBuilder, transformProcessBuilder, listeners, rnd);
-        //Builder<LearningAgent<Observation, IntegerAction>> builder = setupAdvantageActorCritic(network,environmentBuilder, transformProcessBuilder, listeners, rnd);
+        //Builder<LearningAgent<Observation, IntegerAction>> builder = setupNStepQLearning(network,environmentBuilder, transformProcessBuilder, defaultHistoryProcessorBuilder, listeners, rnd);
+        //Builder<LearningAgent<Observation, IntegerAction>> builder = setupAdvantageActorCritic(network,environmentBuilder, transformProcessBuilder, defaultHistoryProcessorBuilder, listeners, rnd);
 
         Trainer trainer = SyncTrainer.<Observation,IntegerAction>builder()
                 .agentLearnerBuilder(builder)
@@ -125,7 +121,7 @@ public class RobotLakeExample {
         DoubleDQNBuilder.Configuration configuration = DoubleDQNBuilder.Configuration.<Observation, IntegerAction>builder()
                 .policyConfiguration(EpsGreedy.Configuration.builder()
                         .epsilonNbStep(3000)
-                        .minEpsilon(0.1)
+                        .minEpsilon(0)
                         .build())
                 .experienceHandlerConfiguration(ReplayMemoryExperienceHandler.Configuration.builder()
                         .maxReplayMemorySize(10000)
@@ -165,7 +161,7 @@ public class RobotLakeExample {
                         .batchSize(Integer.MAX_VALUE)
                         .build())
                 .agentLearnerConfiguration(LearningAgent.Configuration.builder()
-                        .maxEpisodeSteps(100)
+                        .maxEpisodeSteps(200)
                         .build())
                 .agentLearnerListeners(listeners)
                 .build();
@@ -187,7 +183,7 @@ public class RobotLakeExample {
                         .batchSize(Integer.MAX_VALUE)
                         .build())
                 .agentLearnerConfiguration(LearningAgent.Configuration.builder()
-                        .maxEpisodeSteps(100)
+                        .maxEpisodeSteps(200)
                         .build())
                 .agentLearnerListeners(listeners)
                 .build();

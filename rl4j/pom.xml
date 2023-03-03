@@ -67,16 +67,8 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.nd4j</groupId>
-            <artifactId>nd4j-cuda-11.6-platform</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
         </dependency>
         <dependency>
             <groupId>net.jodah</groupId>
@@ -101,32 +93,6 @@
         <dependency>
             <groupId>org.nd4j</groupId>
             <artifactId>nd4j-common-tests</artifactId>
-        </dependency>
-        <!--Examples-->
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>ale-platform</artifactId>
-            <version>0.6.1-1.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>gym-platform</artifactId>
-            <version>0.18.3-1.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>javacv</artifactId>
-            <version>1.5.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20190722</version>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft.msr.malmo</groupId>
-            <artifactId>MalmoJavaJar</artifactId>
-            <version>0.30.0</version>
         </dependency>
     </dependencies>
 

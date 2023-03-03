@@ -18,8 +18,9 @@
  *  *****************************************************************************
  */
 
-package org.deeplearning4j.rl4j.examples;
+package com.destrostudios.rl.test.rl4j.examples;
 
+import com.destrostudios.rl.test.rl4j.mdp.DoAsISayOrDont;
 import org.apache.commons.lang3.builder.Builder;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.ComputationGraphConfiguration;
@@ -32,25 +33,20 @@ import org.deeplearning4j.nn.conf.layers.RnnOutputLayer;
 import org.deeplearning4j.nn.conf.preprocessor.FeedForwardToRnnPreProcessor;
 import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.weights.WeightInit;
-import org.deeplearning4j.rl4j.agent.SteppingAgent;
-import org.deeplearning4j.rl4j.agent.LearningAgent;
 import org.deeplearning4j.rl4j.agent.LearningAgent;
 import org.deeplearning4j.rl4j.agent.learning.algorithm.actorcritic.AdvantageActorCritic;
 import org.deeplearning4j.rl4j.agent.learning.history.DefaultHistoryProcessor;
 import org.deeplearning4j.rl4j.agent.learning.history.HistoryProcessor;
-import org.deeplearning4j.rl4j.agent.learning.history.VideoHistoryProcessor;
 import org.deeplearning4j.rl4j.agent.learning.update.updater.NeuralNetUpdaterConfiguration;
 import org.deeplearning4j.rl4j.agent.listener.AgentListener;
 import org.deeplearning4j.rl4j.agent.listener.utils.EpisodeScorePrinter;
 import org.deeplearning4j.rl4j.builder.AdvantageActorCriticBuilder;
 import org.deeplearning4j.rl4j.environment.Environment;
-import org.deeplearning4j.rl4j.environment.StepResult;
 import org.deeplearning4j.rl4j.environment.action.IntegerAction;
 import org.deeplearning4j.rl4j.environment.observation.Observation;
 import org.deeplearning4j.rl4j.environment.observation.transform.TransformProcess;
 import org.deeplearning4j.rl4j.environment.observation.transform.operation.ArrayToINDArrayTransform;
 import org.deeplearning4j.rl4j.experience.ObservationActionExperienceHandler;
-import org.deeplearning4j.rl4j.mdp.DoAsISayOrDont;
 import org.deeplearning4j.rl4j.network.ActorCriticNetwork;
 import org.deeplearning4j.rl4j.network.TrainableNeuralNet;
 import org.deeplearning4j.rl4j.network.factory.ActorCriticLoss;
@@ -63,8 +59,6 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

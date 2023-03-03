@@ -17,7 +17,7 @@
  *  * SPDX-License-Identifier: Apache-2.0
  *  *****************************************************************************
  */
-package org.deeplearning4j.rl4j.mdp.robotlake;
+package com.destrostudios.rl.test.rl4j.mdp.robotlake;
 
 import org.nd4j.linalg.api.rng.Random;
 

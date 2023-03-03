@@ -18,7 +18,7 @@
  *  *****************************************************************************
  */
 
-package org.deeplearning4j.rl4j.mdp;
+package com.destrostudios.rl.test.rl4j.mdp;
 
 import lombok.Getter;
 import lombok.Setter;

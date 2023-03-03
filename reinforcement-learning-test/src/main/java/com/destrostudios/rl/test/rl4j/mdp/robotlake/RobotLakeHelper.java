@@ -17,7 +17,7 @@
  *  * SPDX-License-Identifier: Apache-2.0
  *  *****************************************************************************
  */
-package org.deeplearning4j.rl4j.mdp.robotlake;
+package com.destrostudios.rl.test.rl4j.mdp.robotlake;
 
 public class RobotLakeHelper {
     private static final byte SAFE_PATH_TO_LOCATION_EXISTS = (byte)1;

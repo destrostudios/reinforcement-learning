@@ -24,17 +24,13 @@ import lombok.Builder;
 import lombok.NonNull;
 
 import org.deeplearning4j.rl4j.environment.action.Action;
-import org.deeplearning4j.rl4j.environment.action.IntegerAction;
 import org.deeplearning4j.rl4j.environment.observation.Observation;
-import org.deeplearning4j.rl4j.environment.observation.ObservationSource;
 import org.deeplearning4j.rl4j.environment.action.space.ActionSpace;
 import org.deeplearning4j.rl4j.network.CommonOutputNames;
 import org.deeplearning4j.rl4j.network.OutputNeuralNet;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.api.rng.Random;
 import org.nd4j.linalg.factory.Nd4j;
-
-import java.io.IOException;
 
 public class ACPolicy<OBSERVATION extends Observation, ACTION extends Action> extends BasePolicy<OBSERVATION,ACTION> {
 

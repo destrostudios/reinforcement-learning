@@ -18,8 +18,9 @@
  *  *****************************************************************************
  */
 
-package org.deeplearning4j.rl4j.examples;
+package com.destrostudios.rl.test.rl4j.examples;
 
+import com.destrostudios.rl.test.rl4j.mdp.TMaze;
 import org.apache.commons.lang3.builder.Builder;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.ComputationGraphConfiguration;
@@ -49,7 +50,6 @@ import org.deeplearning4j.rl4j.environment.observation.Observation;
 import org.deeplearning4j.rl4j.environment.observation.transform.TransformProcess;
 import org.deeplearning4j.rl4j.environment.observation.transform.operation.ArrayToINDArrayTransform;
 import org.deeplearning4j.rl4j.experience.ObservationActionExperienceHandler;
-import org.deeplearning4j.rl4j.mdp.TMaze;
 import org.deeplearning4j.rl4j.network.ActorCriticNetwork;
 import org.deeplearning4j.rl4j.network.TrainableNeuralNet;
 import org.deeplearning4j.rl4j.network.factory.ActorCriticLoss;
@@ -65,8 +65,6 @@ import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

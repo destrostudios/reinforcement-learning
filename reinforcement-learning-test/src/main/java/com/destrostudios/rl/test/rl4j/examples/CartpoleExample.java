@@ -18,20 +18,19 @@
  *  *****************************************************************************
  */
 
-package org.deeplearning4j.rl4j.examples;
+package com.destrostudios.rl.test.rl4j.examples;
 
+import com.destrostudios.rl.test.rl4j.mdp.Cartpole;
 import org.apache.commons.lang3.builder.Builder;
 import org.deeplearning4j.nn.api.NeuralNetwork;
 import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
-import org.deeplearning4j.rl4j.agent.SteppingAgent;
 import org.deeplearning4j.rl4j.agent.LearningAgent;
 import org.deeplearning4j.rl4j.agent.learning.algorithm.actorcritic.AdvantageActorCritic;
 import org.deeplearning4j.rl4j.agent.learning.algorithm.dqn.BaseTransitionTDAlgorithm;
 import org.deeplearning4j.rl4j.agent.learning.algorithm.nstepqlearning.NStepQLearning;
 import org.deeplearning4j.rl4j.agent.learning.history.DefaultHistoryProcessor;
 import org.deeplearning4j.rl4j.agent.learning.history.HistoryProcessor;
-import org.deeplearning4j.rl4j.agent.learning.history.VideoHistoryProcessor;
 import org.deeplearning4j.rl4j.agent.learning.update.updater.NeuralNetUpdaterConfiguration;
 import org.deeplearning4j.rl4j.agent.listener.AgentListener;
 import org.deeplearning4j.rl4j.agent.listener.utils.EpisodeScorePrinter;
@@ -39,16 +38,12 @@ import org.deeplearning4j.rl4j.builder.AdvantageActorCriticBuilder;
 import org.deeplearning4j.rl4j.builder.DoubleDQNBuilder;
 import org.deeplearning4j.rl4j.builder.NStepQLearningBuilder;
 import org.deeplearning4j.rl4j.environment.Environment;
-import org.deeplearning4j.rl4j.environment.StepResult;
 import org.deeplearning4j.rl4j.environment.action.IntegerAction;
-import org.deeplearning4j.rl4j.environment.action.space.IntegerActionSpace;
 import org.deeplearning4j.rl4j.environment.observation.Observation;
 import org.deeplearning4j.rl4j.environment.observation.transform.TransformProcess;
 import org.deeplearning4j.rl4j.environment.observation.transform.operation.ArrayToINDArrayTransform;
 import org.deeplearning4j.rl4j.experience.ReplayMemoryExperienceHandler;
 import org.deeplearning4j.rl4j.experience.ObservationActionExperienceHandler;
-import org.deeplearning4j.rl4j.mdp.gym.Gym;
-import org.deeplearning4j.rl4j.mdp.gym.IntegerGym;
 import org.deeplearning4j.rl4j.network.ActorCriticNetwork;
 import org.deeplearning4j.rl4j.network.TrainableNeuralNet;
 import org.deeplearning4j.rl4j.network.QNetwork;
@@ -61,39 +56,35 @@ import org.deeplearning4j.rl4j.network.factory.NetworkFactory;
 import org.deeplearning4j.rl4j.policy.EpsGreedy;
 import org.deeplearning4j.rl4j.trainer.AsyncTrainer;
 import org.deeplearning4j.rl4j.trainer.Trainer;
-import org.deeplearning4j.rl4j.util.Constants;
 import org.deeplearning4j.rl4j.trainer.SyncTrainer;
 import org.nd4j.linalg.api.rng.Random;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.learning.config.Adam;
-import org.nd4j.linalg.learning.config.RmsProp;
 
 import lombok.NonNull;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NativeCartpoleExample {
+public class CartpoleExample {
 
-    private static final String envID = "CartPole-v1";
-	
     private static final boolean IS_ASYNC = false;
-    private static final int NUM_THREADS = 8;
+    private static final int NUM_THREADS = 2;
     private static final boolean USE_SEPARATE_NETWORKS = false;
 
-    private static final int NUM_EPISODES = 3000;
+    private static final int NUM_EPISODES = 1500;
 
     public static void main(String[] args) {
 
-        Builder<Environment<IntegerAction>> environmentBuilder = () -> IntegerGym.integerBuilder().environment(envID).render(false).monitor(false).build();
+    	// System.setProperty("org.bytedeco.javacpp.logger.debug","true");
+    	
+        Builder<Environment<IntegerAction>> environmentBuilder = Cartpole::new;
         Builder<TransformProcess<Observation>> transformProcessBuilder = () -> TransformProcess.<Observation>builder()
                 .transform("data", new ArrayToINDArrayTransform())
                 .build("data");
         Builder<HistoryProcessor<Observation>> defaultHistoryProcessorBuilder = DefaultHistoryProcessor::new;
 
-                Random rnd = Nd4j.getRandomFactory().getNewRandomInstance(123);
+        Random rnd = Nd4j.getRandomFactory().getNewRandomInstance(123);
 
         List<AgentListener<Observation,IntegerAction>> listeners = new ArrayList<AgentListener<Observation,IntegerAction>>() {
             {
@@ -103,7 +94,7 @@ public class NativeCartpoleExample {
 
         TrainableNeuralNet network = buildDQNNetwork();
         //TrainableNeuralNet network = buildActorCriticNetwork();
-
+ 
         //Builder<LearningAgent<Observation,IntegerAction>> builder = setupDoubleDQN(network, environmentBuilder, transformProcessBuilder, listeners, rnd);
         Builder<LearningAgent<Observation,IntegerAction>> builder = setupNStepQLearning(network, environmentBuilder, transformProcessBuilder, defaultHistoryProcessorBuilder,listeners, rnd);
         //Builder<LearningAgent<Observation,IntegerAction>> builder = setupAdvantageActorCritic(network, environmentBuilder, transformProcessBuilder, listeners, rnd);
@@ -137,15 +128,14 @@ public class NativeCartpoleExample {
         DoubleDQNBuilder.Configuration configuration = DoubleDQNBuilder.Configuration.<Observation,IntegerAction>builder()
                 .policyConfiguration(EpsGreedy.Configuration.builder()
                         .epsilonNbStep(3000)
-                        .annealingStart(10)
                         .minEpsilon(0.1)
                         .build())
                 .experienceHandlerConfiguration(ReplayMemoryExperienceHandler.Configuration.builder()
-                        .maxReplayMemorySize(150000)
-                        .batchSize(128)
+                        .maxReplayMemorySize(10000)
+                        .batchSize(64)
                         .build())
                 .neuralNetUpdaterConfiguration(NeuralNetUpdaterConfiguration.builder()
-                        .targetUpdateFrequency(500)
+                        .targetUpdateFrequency(50)
                         .build())
                 .updateAlgorithmConfiguration(BaseTransitionTDAlgorithm.Configuration.builder()
                         .gamma(0.99)
@@ -156,7 +146,7 @@ public class NativeCartpoleExample {
                 .agentLearnerListeners(listeners)
                 .asynchronous(IS_ASYNC)
                 .build();
-        return new DoubleDQNBuilder(configuration, network, environmentBuilder, transformProcessBuilder,defaultHistoryProcessorBuilder, rnd);
+        return new DoubleDQNBuilder(configuration, network, environmentBuilder, transformProcessBuilder, defaultHistoryProcessorBuilder,rnd);
     }
 
     private static Builder<LearningAgent<Observation,IntegerAction>> setupNStepQLearning(TrainableNeuralNet network,Builder<Environment<IntegerAction>> environmentBuilder,
@@ -167,16 +157,15 @@ public class NativeCartpoleExample {
         NStepQLearningBuilder.Configuration configuration = NStepQLearningBuilder.Configuration.<Observation,IntegerAction>builder()
                 .policyConfiguration(EpsGreedy.Configuration.builder()
                         .epsilonNbStep(75000  / (IS_ASYNC ? NUM_THREADS : 1))
-                        .annealingStart(10)
                         .minEpsilon(0.1)
                         .build())
                 .neuralNetUpdaterConfiguration(NeuralNetUpdaterConfiguration.builder()
-                        .targetUpdateFrequency(500)
+                        .targetUpdateFrequency(50)
                         .build())
                 .nstepQLearningConfiguration(NStepQLearning.Configuration.builder()
                         .build())
                 .experienceHandlerConfiguration(ObservationActionExperienceHandler.Configuration.builder()
-                        .batchSize(128)
+                        .batchSize(5)
                         .build())
                 .agentLearnerConfiguration(LearningAgent.Configuration.builder()
                         .maxEpisodeSteps(200)
@@ -210,24 +199,22 @@ public class NativeCartpoleExample {
         return new AdvantageActorCriticBuilder(configuration, network, environmentBuilder, transformProcessBuilder, defaultHistoryProcessorBuilder,rnd);
     }
 
-    private static TrainableNeuralNet buildDQNNetwork() {    	
+    private static TrainableNeuralNet buildDQNNetwork() {
         DQNDenseNetworkConfiguration netConf = DQNDenseNetworkConfiguration.builder()
-                .updater(new RmsProp(0.000025))
-                .l2(0)
-                .numHiddenNodes(300)
+                .updater(new Adam())
+                .numHiddenNodes(40)
                 .numLayers(2)
                 .build();
         NetworkFactory factory = new DQNFactoryStdDense(netConf);
         NeuralNetwork[] dqnNetwork = factory.build(new int[] { 4 }, 2);
         return QNetwork.builder().withNetwork((@NonNull MultiLayerNetwork) dqnNetwork[0]).build();
     }
-    
+
     private static TrainableNeuralNet buildActorCriticNetwork() {
         ActorCriticDenseNetworkConfiguration netConf =  ActorCriticDenseNetworkConfiguration.builder()
-                .updater(new Adam(1e-2))
-                .l2(0)
-                .numHiddenNodes(16)
-                .numLayers(3)
+                .updater(new Adam())
+                .numHiddenNodes(40)
+                .numLayers(2)
                 .build();
 
         if(USE_SEPARATE_NETWORKS) {
